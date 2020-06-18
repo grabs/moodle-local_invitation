@@ -25,6 +25,9 @@ use local_invitation\helper\date_time as datetime;
 use local_invitation\helper\util as util;
 use local_invitation\globals as gl;
 
+// We do not have a login check in this file because the login is actually done here.
+// So we have to ignore the codingstyle for the config.php inclusion which normally requires a login check.
+// @codingStandardsIgnoreLine
 require_once(dirname(__FILE__) . '/../../config.php');
 
 util::require_active();
@@ -33,6 +36,7 @@ $courseid = required_param('courseid', PARAM_INT);
 $secret = required_param('id', PARAM_TEXT);
 
 $DB = gl::db();
+$USER = gl::user();
 
 // Because it is an enrolment we use the system context.
 $context = context_system::instance();
@@ -83,8 +87,12 @@ if ($confirmdata = $confirmform->get_data()) {
     $DB->insert_record('local_invitation_users', $newuserrecord);
 
     $welcomenote = new \local_invitation\output\component\welcome_note($newuser);
+    $urlparams = array(
+        'id' => $invitation->courseid,
+        'lang' => $USER->lang,
+    );
     redirect(
-        new \moodle_url('/course/view.php', array('id' => $invitation->courseid)),
+        new \moodle_url('/course/view.php', $urlparams),
         $output->render($welcomenote),
         null,
         \core\output\notification::NOTIFY_SUCCESS

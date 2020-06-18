@@ -31,7 +31,7 @@ class confirmation extends base {
 
     private $myconfig;
 
-    function definition() {
+    public function definition() {
         global $CFG;
 
         $this->myconfig = get_config('local_invitation');

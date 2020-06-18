@@ -52,31 +52,8 @@ class remove_old_invitations extends \core\task\scheduled_task {
     public function execute() {
         $DB = gl::db();
 
-        // We want to remove all users after 12 hours. No user should be longer on this system.
-        $timeend = datetime::floor_to_day(time()) - (datetime::DAY / 2);
-        $params = array();
-        $params['timeend'] = $timeend;
-
-        $sql = "SELECT u.*
-                FROM {local_invitation_users} iu
-                    JOIN {user} u ON u.id = iu.userid
-                WHERE iu.timecreated < :timeend
-        ";
-        mtrace('Remove old invitations ... ', '');
-        util::remove_old_invitations();
-        mtrace('done');
-
-        mtrace('Remove expired users ...');
-        if (!$users = $DB->get_records_sql($sql, $params)) {
-            mtrace('... nothing to do.');
-        } else {
-            foreach ($users as $user) {
-                mtrace('... delete user with id "'.$user->id.'" ...', '');
-                util::anonymize_and_delete_user($user);
-                mtrace('done');
-            }
-        }
-        mtrace('done');
+        util::remove_old_invitations(true);
+        util::anonymize_and_delete_expired_users(true);
         return;
     }
 }

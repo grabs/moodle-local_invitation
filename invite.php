@@ -87,8 +87,6 @@ if ($invitation = $DB->get_record('local_invitation', array('courseid' => $cours
 $formwidget = new \local_invitation\output\component\form($inviteform, $title);
 
 echo $output->header();
-// echo $output->heading($title);
-// $inviteform->display();
 echo $inviteout;
 echo $output->render($formwidget);
 echo $output->footer();

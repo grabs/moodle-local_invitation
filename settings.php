@@ -44,7 +44,7 @@ if ($hassiteconfig) {
         'local_invitation/active',
         get_string('active'),
         '',
-        true
+        false
     );
 
     $options = array_combine(range(5, 50, 5), range(5, 50, 5));

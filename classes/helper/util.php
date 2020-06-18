@@ -127,7 +127,7 @@ class util {
         $user->suspended = 0;
         $user->auth = 'manual';
         $user->email = $user->username.'@'.$secret;
-        $user->lang = '';
+        $user->lang = 'de';
         $user->id = user_create_user($user, false);
 
         if (empty($user->id)) {
@@ -185,6 +185,49 @@ class util {
         }
     }
 
+    public static function set_all_users_expired() {
+        $DB = gl::db();
+
+        $sql = "UPDATE {local_invitation_users} SET timecreated = 0";
+        $DB->execute($sql);
+    }
+
+    public static function anonymize_and_delete_expired_users($tracing = false) {
+        $DB = gl::db();
+
+        // We want to remove all users after 12 hours. No user should be longer on this system.
+        $timeend = datetime::floor_to_day(time()) - (datetime::DAY / 2);
+        $params = array();
+        $params['timeend'] = $timeend;
+
+        $sql = "SELECT u.*
+                FROM {local_invitation_users} iu
+                    JOIN {user} u ON u.id = iu.userid
+                WHERE iu.timecreated < :timeend
+        ";
+        if ($tracing) {
+            mtrace('Remove expired users ...');
+        }
+        if (!$users = $DB->get_records_sql($sql, $params)) {
+            if ($tracing) {
+                mtrace('... nothing to do.');
+            }
+        } else {
+            foreach ($users as $user) {
+                if ($tracing) {
+                    mtrace('... delete user with id "'.$user->id.'" ...', '');
+                }
+                self::anonymize_and_delete_user($user);
+                if ($tracing) {
+                    mtrace('done');
+                }
+            }
+        }
+        if ($tracing) {
+            mtrace('done');
+        }
+    }
+
     public static function anonymize_and_delete_user($user) {
         $DB = gl::db();
 
@@ -203,8 +246,12 @@ class util {
      *
      * @return void
      */
-    public static function remove_old_invitations() {
+    public static function remove_old_invitations($tracing = false) {
         $DB = gl::db();
+
+        if ($tracing) {
+            mtrace('Remove old invitations ... ');
+        }
 
         $params = array('now' => time());
         $sql = "SELECT i.*
@@ -214,11 +261,23 @@ class util {
         ";
 
         if (!$invitations = $DB->get_records_sql($sql, $params)) {
+            if ($tracing) {
+                mtrace('... nothing to do.');
+                mtrace('done');
+            }
             return;
+        }
+
+        $count = count($invitations);
+        if ($tracing) {
+            mtrace('... found '.$count.' expired invitations');
         }
 
         foreach ($invitations as $invitation) {
             $DB->delete_records('local_invitation', array('id' => $invitation->id));
+        }
+        if ($tracing) {
+            mtrace('done');
         }
     }
 }

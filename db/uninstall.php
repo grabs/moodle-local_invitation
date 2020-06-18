@@ -21,17 +21,20 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_invitation\helper\date_time as datetime;
+use local_invitation\helper\util as util;
+use local_invitation\globals as gl;
+
 defined('MOODLE_INTERNAL') || die();
 
-$capabilities = array(
-
-    'local/invitation:manage' => array(
-
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_COURSE,
-        'archetypes' => array(
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
-        )
-    ),
-);
+/**
+ * This is called at the beginning of the uninstallation process to give the module
+ * a chance to clean-up its hacks, bits etc. where possible.
+ *
+ * @return bool true if success
+ */
+function xmldb_local_invitation_uninstall() {
+    util::set_all_users_expired();
+    util::anonymize_and_delete_expired_users();
+    return true;
+}
