@@ -22,6 +22,7 @@
  */
 
 use local_invitation\helper\date_time as datetime;
+use local_invitation\helper\util as util;
 use local_invitation\globals as gl;
 
 defined('MOODLE_INTERNAL') || die();
@@ -32,14 +33,20 @@ defined('MOODLE_INTERNAL') || die();
  * @param global_navigation $navigation
  */
 function local_invitation_extend_navigation(global_navigation $navigation) {
-    global $CFG, $PAGE, $COURSE;
+    $CFG = gl::cfg();
+    $PAGE = gl::page();
+    $COURSE = gl::course();
 
     if ($COURSE->id == SITEID) {
         return;
     }
 
+    if (!util::is_active()) {
+        return;
+    }
+
     $context = \context_course::instance($COURSE->id);
-    // Are we really on the course page?
+    // Are we really on the course page or maybe in an activity page?
     if ($PAGE->context->id !== $context->id) {
         return;
     }

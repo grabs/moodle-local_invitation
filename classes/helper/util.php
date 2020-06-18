@@ -178,9 +178,13 @@ class util {
         return $username;
     }
 
-    public static function require_active() {
+    public static function is_active() {
         $cfg = get_config('local_invitation');
-        if (empty($cfg->active)) {
+        return (bool) $cfg->active;
+    }
+
+    public static function require_active() {
+        if (!self::is_active()) {
             throw new \moodle_exception('error_invitation_not_active', 'local_invitation');
         }
     }
