@@ -1,0 +1,130 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * @package    local_invitation
+ * @author     Andreas Grabs <info@grabs-edv.de>
+ * @copyright  2020 Andreas Grabs EDV-Beratung
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+namespace local_invitation;
+use local_invitation\helper\date_time as datetime;
+
+defined('MOODLE_INTERNAL') || die();
+
+class globals {
+    /**
+     * Returns the \moodle_database instance
+     *
+     * @global \moodle_database $DB
+     * @return \moodle_database
+     */
+    public static function db() {
+        global $DB;
+        return $DB;
+    }
+
+    /**
+     * Returns the \renderer_base instance
+     *
+     * @return \renderer_base
+     */
+    public static function output() {
+        global $OUTPUT;
+        return $OUTPUT;
+    }
+
+    /**
+     * Returns the $SESSION instance
+     *
+     * @return \stdClass
+     */
+    public static function session() {
+        global $SESSION;
+        return $SESSION;
+    }
+
+    /**
+     * Returns the $USER instance
+     *
+     * @return \stdClass
+     */
+    public static function user() {
+        global $USER;
+        return $USER;
+    }
+
+    /**
+     * Returns the $PAGE instance
+     *
+     * @return \moodle_page
+     */
+    public static function page() {
+        global $PAGE;
+        return $PAGE;
+    }
+
+    /**
+     * Returns the $CFG instance
+     *
+     * @return \stdClass
+     */
+    public static function cfg() {
+        global $CFG;
+        return $CFG;
+    }
+
+    public static function mycfg() {
+        static $mycfg;
+
+        if (empty($mycfg)) {
+            $mycfg = get_config('local_svg_manager');
+        }
+
+        return $mycfg;
+    }
+
+    /**
+     * Returns the $SITE instance
+     *
+     * @return \stdClass
+     */
+    public static function site() {
+        global $SITE;
+        return $SITE;
+    }
+
+    /**
+     * Returns the $COURSE instance
+     *
+     * @return \stdClass
+     */
+    public static function course() {
+        global $COURSE;
+        return $COURSE;
+    }
+
+    /**
+     * Returns the $FULLME instance
+     *
+     * @return string
+     */
+    public static function fullme() {
+        global $FULLME;
+        return $FULLME;
+    }
+}

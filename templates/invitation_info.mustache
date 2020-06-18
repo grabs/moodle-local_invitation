@@ -1,0 +1,80 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_invitation/form
+}}
+
+<div class="row">
+    <div class="col-lg-7">
+        <div class="card invitationsettings mb-3 bg-light border border-primary">
+            <div class="card-body">
+                <div class="card-title">
+                    <h2>{{title}}</h2>
+                </div>
+                <div class="invitation-url">
+                    <a href="{{{url}}}">{{{url}}}</a>
+                </div>
+                <div class="row">
+                    <div class="col-lg-7">
+                        <table class="table table-sm">
+                            <tbody>
+                                <tr>
+                                    <th width="120px">
+                                        {{#str}} available_from, local_invitation {{/str}}
+                                    </th>
+                                    <td>
+                                        {{timestart}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        {{#str}} available_to, local_invitation {{/str}}
+                                    </th>
+                                    <td>
+                                        {{timeend}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    {{#freeslots}}
+                                        <th class="text-success">
+                                            {{#str}} free_slots, local_invitation {{/str}}
+                                        </th>
+                                        <td class="text-success">
+                                            {{freeslots}} <i class="fa fa-check"></i>
+                                        </td>
+                                    {{/freeslots}}
+                                    {{^freeslots}}
+                                        <th class="text-danger">
+                                            {{#str}} free_slots, local_invitation {{/str}}
+                                        </th>
+                                        <td class="text-danger">
+                                            {{freeslots}} <i class="fa fa-times"></i>
+                                        </td>
+                                    {{/freeslots}}
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="invitation-note">
+                    <span class="font-weight-bold">{{#str}} note, local_invitation {{/str}}</span>
+                    <span>{{note}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
