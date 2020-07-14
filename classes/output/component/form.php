@@ -30,11 +30,12 @@ defined('MOODLE_INTERNAL') || die();
 class form extends base {
     private $mform;
 
-    public function __construct(\local_invitation\form\base $mform, $title) {
+    public function __construct(\local_invitation\form\base $mform, $title, $autoopen = false) {
         parent::__construct();
 
         $this->mform = $mform;
         $this->data['title'] = $title;
+        $this->data['autoopen'] = $autoopen;
     }
 
     /**

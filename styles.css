@@ -1,0 +1,17 @@
+/*************************************
+Calender widged in date-selector
+Due to we have it in a stacked modal box
+the z-index must be fixed.
+**************************************/
+#page-local-invitation-invite #dateselector-calendar-panel {
+    z-index: 1110 !important;
+}
+
+#page-local-invitation-invite .moodle-dialogue-focused,
+#page-local-invitation-invite .moodle-dialogue {
+    z-index: 1070 !important;
+}
+
+#page-local-invitation-invite .yui3-widget-mask.moodle-dialogue-lightbox {
+    z-index: 1051 !important;
+}

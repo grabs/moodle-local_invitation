@@ -21,9 +21,33 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
+namespace local_invitation\output\component;
+use local_invitation\helper\date_time as datetime;
+use local_invitation\globals as gl;
 
-$plugin->version  = 2020071400;
-$plugin->requires = 2015051103;
-$plugin->maturity = MATURITY_BETA;
-$plugin->component = 'local_invitation';
+defined('MOODLE_INTERNAL') || die();
+
+class edit_form_box extends base {
+    private $editform;
+
+    public function __construct($editform, $autoopen) {
+        $DB = gl::db();
+        parent::__construct();
+
+        $this->editform = $editform;
+        $this->data['autoopen'] = $autoopen;
+        $this->data['linktitle'] = '<i class="fa fa-cog fa-lg"></i>';
+        $this->data['title'] = get_string('edit_invitation', 'local_invitation');
+    }
+
+    /**
+     * Data for usage in mustache
+     *
+     * @param \renderer_base $output
+     * @return array
+     */
+    public function export_for_template(\renderer_base $output) {
+        $this->data['formcontent'] = $this->editform->export_for_template($output);
+        return $this->data;
+    }
+}

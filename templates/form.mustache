@@ -22,10 +22,12 @@
     <div class="col-lg-7">
         <div class="card invitationsettings">
             <div class="card-header">
-                <h2>{{title}}</h2>
+                <h2><a data-toggle="collapse" href="#collapse-{{uniqid}}">{{title}}</a></h2>
             </div>
-            <div class="card-body">
-                {{{formcontent}}}
+            <div class="collapse{{#autoopen}} show{{/autoopen}}" id="collapse-{{uniqid}}">
+                <div class="card-body">
+                    {{{formcontent}}}
+                </div>
             </div>
         </div>
     </div>

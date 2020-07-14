@@ -27,7 +27,7 @@ use local_invitation\globals as gl;
 
 defined('MOODLE_INTERNAL') || die;
 
-class invite extends base {
+class update extends base {
 
     private $myconfig;
 
@@ -45,6 +45,10 @@ class invite extends base {
         if (empty($customdata->courseid)) {
             throw new \moodle_exception('Missing courseid in customdata');
         }
+
+        $mform->addElement('hidden', 'id');
+        $mform->setType('id', PARAM_INT);
+        $mform->setConstant('id', $customdata->id);
 
         $mform->addElement('hidden', 'courseid');
         $mform->setType('courseid', PARAM_INT);
