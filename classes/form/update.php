@@ -58,10 +58,7 @@ class update extends base {
         $mform->setType('userrole', PARAM_INT);
         $mform->setConstant('userrole', $this->myconfig->userrole);
 
-        $options = array_combine(
-            range(1, $this->myconfig->maxusers),
-            range(1, $this->myconfig->maxusers)
-        );
+        $options = self::get_maxusers_options($this->myconfig->maxusers);;
         $mform->addElement('select', 'maxusers', get_string('max_users', 'local_invitation'), $options);
 
         $timestart = datetime::floor_to_day(time());

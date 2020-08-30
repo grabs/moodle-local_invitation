@@ -47,7 +47,7 @@ if ($hassiteconfig) {
         false
     );
 
-    $options = array_combine(range(5, 50, 5), range(5, 50, 5));
+    $options = \local_invitation\form\base::get_maxusers_options(0);
     $configs[] = new admin_setting_configselect(
         'local_invitation/maxusers',
         get_string('max_users_per_invitation', 'local_invitation'),

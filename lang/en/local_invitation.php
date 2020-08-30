@@ -47,5 +47,6 @@ $string['pluginname'] = 'Invitation';
 $string['remove_old_invitations'] = 'Remove old users';
 $string['timeend'] = 'Time end';
 $string['timestart'] = 'Time start';
+$string['usedslots'] = 'Used:';
 $string['userrole'] = 'User role';
 $string['welcome_note'] = 'Welcome {$a->firstname} {$a->lastname}!';

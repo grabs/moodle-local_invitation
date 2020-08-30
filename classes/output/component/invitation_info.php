@@ -43,13 +43,21 @@ class invitation_info extends base {
             'id' => $invitation->secret,
         );
         $dateformat = get_string('strftimedatetimeshort');
-        $slots = intval($invitation->maxusers) - $usedslots;
         $this->data['title'] = get_string('current_invitation', 'local_invitation');
         $this->data['url'] = new \moodle_url('/local/invitation/join.php', $urlparams);
         $this->data['timestart'] = userdate($invitation->timestart, $dateformat, 99, false);
         $this->data['timeend'] = userdate($invitation->timeend, $dateformat, 99, false);
-        $this->data['slots'] = $slots;
-        $this->data['freeslots'] = $slots > 0;
+
+        $this->data['usedslots'] = $usedslots;
+        if ($invitation->maxusers != 0) {
+            $slots = intval($invitation->maxusers) - $usedslots;
+            $this->data['slots'] = $slots;
+            $this->data['freeslots'] = $slots > 0;
+        } else {
+            $this->data['slots'] = get_string('unlimited');
+            $this->data['freeslots'] = true;
+        }
+
         $this->data['note'] = get_string('current_invitation_note', 'local_invitation');
     }
 

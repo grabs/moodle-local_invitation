@@ -44,4 +44,30 @@ abstract class base extends \moodleform implements \renderable, \templatable {
         ob_end_clean();
         return $data;
     }
+
+    public static function get_maxusers_options($maxusers) {
+
+        if ($maxusers == 0) {
+            // This means it is unlimited.
+            $unlimited = array(0 => get_string('unlimited'));
+            $optionslow = array_combine(range(5, 50, 5), range(5, 50, 5));
+            $optionsmid = array_combine(range(60, 150, 10), range(60, 150, 10));
+            $optionshigh = array_combine(range(200, 1000, 50), range(200, 1000, 50));
+        } else if ($maxusers < 60) {
+            $unlimited = $optionsmid = $optionshigh = array();
+            $optionslow = array_combine(range(5, $maxusers, 5), range(5, $maxusers, 5));
+        } else if ($maxusers < 200) {
+            $unlimited = $optionshigh = array();
+            $optionslow = array_combine(range(5, 50, 5), range(5, 50, 5));
+            $optionsmid = array_combine(range(60, $maxusers, 10), range(60, $maxusers, 10));
+        } else {
+            $unlimited = array();
+            $optionslow = array_combine(range(5, 50, 5), range(5, 50, 5));
+            $optionsmid = array_combine(range(60, 150, 10), range(60, 150, 10));
+            $optionshigh = array_combine(range(200, $maxusers, 50), range(200, $maxusers, 50));
+        }
+
+        $options = $optionslow + $optionsmid + $optionshigh + $unlimited;
+        return $options;
+    }
 }

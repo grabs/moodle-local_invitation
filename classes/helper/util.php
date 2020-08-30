@@ -63,18 +63,21 @@ class util {
         $params['secret'] = $secret;
         $params['now1'] = time();
         $params['now2'] = $params['now1'];
+        $params['unlimited'] = 0;
 
         $sql = "SELECT i.*
                 FROM {local_invitation} i
                     JOIN {course} c ON c.id = i.courseid
-                WHERE i.secret = :secret AND
+                WHERE (
+                    i.secret = :secret AND
                     i.timestart <= :now1 AND
-                    i.timeend > :now2 AND
-                    (
-                        SELECT COUNT(*)
-                        FROM {local_invitation_users} iu
-                        WHERE iu.invitationid = i.id
-                    ) < i.maxusers
+                    i.timeend > :now2 AND (
+                            SELECT COUNT(*)
+                            FROM {local_invitation_users} iu
+                            WHERE iu.invitationid = i.id
+                        ) < i.maxusers
+                    ) OR
+                    i.maxusers = :unlimited
         ";
         $invitation = $DB->get_record_sql($sql, $params);
 
