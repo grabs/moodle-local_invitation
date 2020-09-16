@@ -24,6 +24,7 @@
 defined('MOODLE_INTERNAL') || die;
 
 $plugin->version  = 2020083000;
+$plugin->release = '1.0 (2020091600)';
 $plugin->requires = 2015051103;
 $plugin->maturity = MATURITY_BETA;
 $plugin->component = 'local_invitation';
