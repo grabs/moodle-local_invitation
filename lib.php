@@ -63,8 +63,9 @@ function local_invitation_extend_navigation(global_navigation $navigation) {
         }
     }
 
+    $nodetitle = get_string('invite_participants', 'local_invitation');
     $newnode = navigation_node::create(
-        get_string('invite_participants', 'local_invitation'),
+        $nodetitle,
         new moodle_url('/local/invitation/invite.php', array('courseid' => $COURSE->id)),
         global_navigation::TYPE_ROOTNODE,
         null,
@@ -73,10 +74,12 @@ function local_invitation_extend_navigation(global_navigation $navigation) {
     );
     $newnode->showinflatnavigation;
     $newnode->showdivider = true;
+    $newnode->collectionlabel = $nodetitle;
 
     $myhomenode = $navigation->find($COURSE->id, global_navigation::TYPE_COURSE);
     foreach ($myhomenode->children as $c) {
         $c->showdivider = true;
+        $c->collectionlabel = $c->shorttext;
         $myhomenode->add_node($newnode, $c->key);
         return;
     }
