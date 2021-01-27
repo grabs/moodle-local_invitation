@@ -92,7 +92,7 @@ class globals {
         static $mycfg;
 
         if (empty($mycfg)) {
-            $mycfg = get_config('local_svg_manager');
+            $mycfg = get_config('local_invitation');
         }
 
         return $mycfg;

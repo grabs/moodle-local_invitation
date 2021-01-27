@@ -70,4 +70,14 @@ abstract class base extends \moodleform implements \renderable, \templatable {
         $options = $optionslow + $optionsmid + $optionshigh + $unlimited;
         return $options;
     }
+
+    public static function get_expiration_options() {
+
+        $optionslow = array_combine(range(1, 49), range(1, 49));
+        $optionsmid = array_combine(range(5, 50, 5), range(5, 50, 5));
+        $optionshigh = array_combine(range(60, 150, 10), range(60, 150, 10));
+
+        $options = $optionslow + $optionsmid + $optionshigh;
+        return $options;
+    }
 }

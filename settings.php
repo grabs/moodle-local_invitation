@@ -41,28 +41,69 @@ if ($hassiteconfig) {
     );
 
     $configs[] = new admin_setting_configcheckbox(
-        'local_invitation/active',
+        'active',
         get_string('active'),
         '',
         false
     );
 
+    $configs[] = new admin_setting_configcheckbox(
+        'deleteafterlogout',
+        get_string('delete_after_logout', 'local_invitation'),
+        get_string('delete_after_logout_help', 'local_invitation'),
+        false
+    );
+
+    $options = \local_invitation\form\base::get_expiration_options();
+    $configs[] = new admin_setting_configselect(
+        'expiration',
+        get_string('expiration_time', 'local_invitation'),
+        get_string('expiration_time_help', 'local_invitation'),
+        1,
+        $options
+    );
+
     $options = \local_invitation\form\base::get_maxusers_options(0);
     $configs[] = new admin_setting_configselect(
-        'local_invitation/maxusers',
+        'maxusers',
         get_string('max_users_per_invitation', 'local_invitation'),
         '',
         15,
         $options
     );
 
-    $options = util::get_role_choices();
+    $options = util::get_role_choices(CONTEXT_COURSE);
     $configs[] = new admin_setting_configselect(
-        'local_invitation/userrole',
+        'userrole',
         get_string('userrole', 'local_invitation'),
         '',
         null,
         $options
+    );
+
+    $options = util::get_role_choices(CONTEXT_SYSTEM);
+    $configs[] = new admin_setting_configselect(
+        'systemrole',
+        get_string('systemrole', 'local_invitation'),
+        get_string('systemrole_help', 'local_invitation'),
+        null,
+        $options
+    );
+
+    $options = util::get_prevent_actions();
+    $configs[] = new admin_setting_configmultiselect(
+        'preventactions',
+        get_string('preventactions', 'local_invitation'),
+        '',
+        array_keys($options),
+        $options
+    );
+
+    $configs[] = new admin_setting_confightmleditor(
+        'consent',
+        get_string('consent', 'local_invitation'),
+        get_string('consent_help', 'local_invitation'),
+        ''
     );
 
     // Put all settings into the settings page.

@@ -46,7 +46,9 @@ class invitation_info extends base {
         $this->data['title'] = get_string('current_invitation', 'local_invitation');
         $this->data['url'] = new \moodle_url('/local/invitation/join.php', $urlparams);
         $this->data['timestart'] = userdate($invitation->timestart, $dateformat, 99, false);
+        $this->data['timestartwarning'] = $invitation->timestart > time();
         $this->data['timeend'] = userdate($invitation->timeend, $dateformat, 99, false);
+        $this->data['timeendwarning'] = $invitation->timeend < time();
 
         $this->data['usedslots'] = $usedslots;
         if ($invitation->maxusers != 0) {

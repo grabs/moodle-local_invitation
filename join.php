@@ -45,7 +45,7 @@ $context = context_system::instance();
 $invitation = util::get_invitation_from_secret($secret, $courseid);
 if (!$invitation) {
     $errmsg = get_string('error_invalid_invitation', 'local_invitation');
-    redirect(new \moodle_url('/'), $errmsg, null, \core\output\notification::NOTIFY_ERROR);
+    redirect(new \moodle_url('/local/invitation/error.php'), $errmsg, null, \core\output\notification::NOTIFY_ERROR);
 }
 
 $title = get_string('invitation', 'local_invitation');

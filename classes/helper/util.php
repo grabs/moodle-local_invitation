@@ -28,29 +28,57 @@ use local_invitation\globals as gl;
 defined('MOODLE_INTERNAL') || die();
 
 class util {
+
+    const PREVENTPATTERNS = array(
+        'enrolment'         => '#enrol/index.php#',
+        'courselist'        => '#course(/index.php.*|/)$#',
+        'calendar'          => '#calendar/#',
+        'gradebook'         => '#grade/#',
+        'coursesearch'      => '#course/search.php#',
+        'coursejump'        => '#blocks/course_jump#',
+        'profile'           => '#user/profile.php#',
+        'managetoken'       => '#user/managetoken.php#',
+        'userpreferences'   => '#user/preferences.php#',
+        'badges'            => '#badges/.*#',
+        'messages'          => '#message/index.php#',
+    );
+
+
     /**
      * Get all roles as choice parameters.
      * Because we need them more than once so we define it here.
      *
      * @return array
      */
-    public static function get_role_choices() {
-        static $choices;
+    public static function get_role_choices($contextlevel) {
 
-        if (empty($choices)) {
-            $roles = get_all_roles();
-            $choices = role_fix_names($roles, null, ROLENAME_ORIGINAL, true);
-            $choices = array(0 => get_string('choose')) + $choices;
-        }
+        $roles = self::get_roles_for_contextlevel($contextlevel);
+
+        $choices = role_fix_names($roles, null, ROLENAME_ORIGINAL, true);
+        $choices = array(0 => get_string('choose')) + $choices;
         return $choices;
+    }
+
+    public static function get_roles_for_contextlevel($contextlevel) {
+        $DB = gl::db();
+
+        $sql = "SELECT r.*
+                FROM {role} r
+                    JOIN {role_context_levels} rcl
+                        ON r.id = rcl.roleid
+                WHERE rcl.contextlevel = :contextlevel
+        ";
+        $params = array('contextlevel' => $contextlevel);
+
+        return $DB->get_records_sql($sql, $params);
     }
 
     public static function generate_secret_for_inventation() {
         $DB = gl::db();
 
-        $secret = generate_uuid();
+        $secret = \core\uuid::generate();
         while ($DB->count_records('local_invitation', array('secret' => $secret)) > 0) {
-            $secret = generate_uuid();
+            $secret = \core\uuid::generate();
         }
         return $secret;
     }
@@ -86,6 +114,7 @@ class util {
 
     public static function create_login_and_enrol($invitation, $confirmdata) {
         $DB = gl::db();
+        $mycfg = gl::mycfg();
 
         // Wrap the SQL queries in a transaction.
         $transaction = $DB->start_delegated_transaction();
@@ -103,6 +132,11 @@ class util {
         // The user exists and we can now login him.
         $user = authenticate_user_login($newuser->username, $newuser->password_raw);
         complete_user_login($user);
+
+        if (!empty($mycfg->systemrole)) {
+            role_assign($mycfg->systemrole, $user->id, \context_system::instance());
+        }
+
         return $user;
     }
 
@@ -111,7 +145,6 @@ class util {
      * @return \stdClass the new created user
      */
     private static function create_login($secret, $firstname, $lastname) {
-        $DB = gl::db();
         $CFG = gl::cfg();
 
         require_once($CFG->dirroot.'/user/lib.php');
@@ -129,7 +162,7 @@ class util {
         $user->timecreated = time();
         $user->suspended = 0;
         $user->auth = 'manual';
-        $user->email = $user->username.'@'.$secret;
+        $user->email = $user->username.'@'.self::get_email_domain();
         $user->lang = 'de';
         $user->id = user_create_user($user, false);
 
@@ -181,11 +214,36 @@ class util {
         return $username;
     }
 
+    /**
+     * Get a temporary email domain.
+     * @return string the email domain
+     */
+    private static function get_email_domain() {
+        $DB = gl::db();
+
+        $domain = random_string();
+        $domain .= '.invalid'; // Use "invalid" as top level domain to prevent sending emails.
+        return $domain;
+    }
+
     public static function is_active() {
         $cfg = get_config('local_invitation');
         return (bool) $cfg->active;
     }
 
+    public static function is_user_invited($userid) {
+        $DB = gl::db();
+
+        if ($DB->record_exists('local_invitation_users', array('userid' => $userid))) {
+            return $DB->get_record('user', array('id' => $userid));
+        }
+    }
+
+    public static function get_consent() {
+        $mycfg = gl::mycfg();
+        $consent = $mycfg->consent;
+        return $consent;
+    }
     public static function require_active() {
         if (!self::is_active()) {
             throw new \moodle_exception('error_invitation_not_active', 'local_invitation');
@@ -201,16 +259,20 @@ class util {
 
     public static function anonymize_and_delete_expired_users($tracing = false) {
         $DB = gl::db();
+        $mycfg = gl::mycfg();
 
-        // We want to remove all users after 12 hours. No user should be longer on this system.
-        $timeend = datetime::floor_to_day(time()) - (datetime::DAY / 2);
+        $expiration = empty($mycfg->expiration) ? 1 : $mycfg->expiration;
+        $expiration *= datetime::DAY;
+
+        // We want to remove all users after x days defined in settings. No user should be longer on this system.
+        $timeend = time() - $expiration;
         $params = array();
         $params['timeend'] = $timeend;
 
         $sql = "SELECT u.*
                 FROM {local_invitation_users} iu
                     JOIN {user} u ON u.id = iu.userid
-                WHERE iu.timecreated < :timeend
+                WHERE iu.timecreated < :timeend AND u.deleted = 0
         ";
         if ($tracing) {
             mtrace('Remove expired users ...');
@@ -243,7 +305,7 @@ class util {
         $DB->update_record('user', $user);
         delete_user($user);
 
-        $DB->delete_records('local_invitation_users', array('userid' => $user->id));
+        $DB->set_field('local_invitation_users', 'deleted', 1, array('userid' => $user->id));
 
         return;
     }
@@ -255,9 +317,28 @@ class util {
      */
     public static function remove_old_invitations($tracing = false) {
         $DB = gl::db();
+        $mycfg = gl::mycfg();
 
         if ($tracing) {
             mtrace('Remove old invitations ... ');
+        }
+
+        // Delete old invitation users.
+        $expiration = empty($mycfg->expiration) ? 1 : $mycfg->expiration;
+        $expiration *= datetime::DAY;
+        $timeend = datetime::floor_to_day(time()) - $expiration;
+        // Get all invitation users who are deleted not having an invitation anymore.
+        $sql = "SELECT ui.id, ui.timecreated
+                FROM {local_invitation_users} ui
+                    LEFT JOIN {local_invitation} i ON i.id = ui.invitationid
+                WHERE i.id IS NULL AND
+                    ui.timecreated < :timeend AND
+                    ui.deleted = 1
+        ";
+        $params = array('timeend' => $timeend);
+        $iusers = $DB->get_recordset_sql($sql, $params);
+        foreach ($iusers as $iu) {
+            $DB->delete_records('local_invitation_users', array('id' => $iu->id));
         }
 
         $params = array('now' => time());
@@ -286,5 +367,46 @@ class util {
         if ($tracing) {
             mtrace('done');
         }
+    }
+
+    public static function prevent_urls($user) {
+        global $FULLME;
+        $mycfg = gl::mycfg();
+
+        if (empty($mycfg->preventactions)) {
+            return;
+        }
+
+        $COURSE = gl::course();
+
+        if (!util::is_user_invited($user->id)) {
+            return;
+        }
+
+        $preventactions = explode(',', $mycfg->preventactions);
+
+        foreach (self::PREVENTPATTERNS as $key => $pp) {
+            if (!in_array($key, $preventactions)) {
+                continue;
+            }
+            if (preg_match($pp, $FULLME)) {
+                $context = \context_course::instance($COURSE->id);
+                if (is_enrolled($context, $user)) {
+                    $url = new \moodle_url('/course/view.php', array('id' => $COURSE->id));
+                } else {
+                    $url = new \moodle_url('/');
+                }
+                redirect($url);
+            }
+        }
+    }
+
+    public static function get_prevent_actions() {
+        $options = array();
+
+        foreach (self::PREVENTPATTERNS as $key => $pa) {
+            $options[$key] = get_string('action_'.$key, 'local_invitation');
+        }
+        return $options;
     }
 }

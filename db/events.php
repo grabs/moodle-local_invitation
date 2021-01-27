@@ -29,4 +29,8 @@ $observers = array(
         'eventname' => '\core\event\course_deleted',
         'callback' => '\local_invitation\observer::course_deleted',
     ),
+    array(
+        'eventname'   => '\core\event\user_loggedout',
+        'callback'    => '\local_invitation\observer::user_loggedout',
+    ),
 );

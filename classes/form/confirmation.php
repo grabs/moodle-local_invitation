@@ -23,6 +23,7 @@
 
 namespace local_invitation\form;
 use local_invitation\helper\date_time as datetime;
+use local_invitation\helper\util;
 use local_invitation\globals as gl;
 
 defined('MOODLE_INTERNAL') || die;
@@ -32,7 +33,8 @@ class confirmation extends base {
     private $myconfig;
 
     public function definition() {
-        global $CFG;
+        $CFG = gl::cfg();
+        $mycfg = gl::mycfg();
 
         $this->myconfig = get_config('local_invitation');
         if (empty($this->myconfig->userrole)) {
@@ -62,9 +64,16 @@ class confirmation extends base {
         $mform->setType('lastname', PARAM_TEXT);
         $mform->addRule('lastname', null, 'required', null, 'client');
 
+        if ($consent = util::get_consent()) {
+            $consent = format_text($consent);
+            $consenttitle = get_string('consent_title', 'local_invitation');
+            // $mform->addElement('static', 'consenttext', $consenttitle, $consent);
+            $mform->addElement('checkbox', 'consent', $consenttitle, $consent);
+            $mform->addRule('consent', get_string('required'), 'required', null, 'client');
+        }
+
         $submitlabel = get_string('join', 'local_invitation');
         $this->add_action_buttons(true, $submitlabel);
 
     }
-
 }

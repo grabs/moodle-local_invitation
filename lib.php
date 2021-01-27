@@ -36,6 +36,10 @@ function local_invitation_extend_navigation(global_navigation $navigation) {
     $CFG = gl::cfg();
     $PAGE = gl::page();
     $COURSE = gl::course();
+    $USER = gl::user();
+
+    // Prevent some urls to invited users.
+    util::prevent_urls($USER);
 
     if ($COURSE->id == SITEID) {
         return;

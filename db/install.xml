@@ -20,6 +20,7 @@
       </KEYS>
       <INDEXES>
         <INDEX NAME="courseid" UNIQUE="true" FIELDS="courseid" COMMENT="The course this invitation belongs to."/>
+        <INDEX NAME="secret" UNIQUE="false" FIELDS="secret"/>
       </INDEXES>
     </TABLE>
     <TABLE NAME="local_invitation_users" COMMENT="This table keeps information about users invited by this plugin">
@@ -28,6 +29,7 @@
         <FIELD NAME="invitationid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="The time of the first student submission to this assignment."/>
+        <FIELD NAME="deleted" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="The unique id for this assignment submission."/>
@@ -35,6 +37,7 @@
       </KEYS>
       <INDEXES>
         <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
+        <INDEX NAME="timecreated" UNIQUE="false" FIELDS="timecreated"/>
       </INDEXES>
     </TABLE>
   </TABLES>

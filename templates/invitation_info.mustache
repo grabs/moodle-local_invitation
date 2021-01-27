@@ -36,7 +36,7 @@
                                     <th width="120px">
                                         {{#str}} available_from, local_invitation {{/str}}
                                     </th>
-                                    <td>
+                                    <td {{#timestartwarning}}class="text-danger"{{/timestartwarning}}>
                                         {{timestart}}
                                     </td>
                                 </tr>
@@ -44,7 +44,7 @@
                                     <th>
                                         {{#str}} available_to, local_invitation {{/str}}
                                     </th>
-                                    <td>
+                                    <td {{#timeendwarning}}class="text-danger"{{/timeendwarning}}>
                                         {{timeend}}
                                     </td>
                                 </tr>

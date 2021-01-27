@@ -23,6 +23,7 @@
 
 namespace local_invitation;
 use local_invitation\helper\date_time as datetime;
+use local_invitation\helper\util;
 use local_invitation\globals as gl;
 
 defined('MOODLE_INTERNAL') || die();
@@ -48,5 +49,27 @@ class observer {
         $courseid = $event->courseid;
 
         $DB->delete_records('local_invitation', array('courseid' => $courseid));
+    }
+
+    /**
+     * Triggered via event.
+     *
+     * @param \core\event\user_loggedout $event
+     */
+    public static function user_loggedout(\core\event\user_loggedout $event) {
+        $mycfg = gl::mycfg();
+
+        if (!util::is_active()) {
+            return;
+        }
+
+        if (!$mycfg->deleteafterlogout) {
+            return;
+        }
+
+        $userid = $event->userid;
+        if ($user = util::is_user_invited($userid)) {
+            util::anonymize_and_delete_user($user);
+        }
     }
 }

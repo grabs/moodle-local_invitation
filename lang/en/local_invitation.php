@@ -21,17 +21,34 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
+$string['action_badges'] = 'Show badges';
+$string['action_calendar'] = 'Show calendar';
+$string['action_coursejump'] = 'Show course jump';
+$string['action_courselist'] = 'Show course list';
+$string['action_coursesearch'] = 'Show course search';
+$string['action_enrolment'] = 'Enrolment';
+$string['action_gradebook'] = 'Show gradebook';
+$string['action_managetoken'] = 'Manage token';
+$string['action_messages'] = 'Show messages';
+$string['action_profile'] = 'Show profile';
+$string['action_userpreferences'] = 'Show user preferences';
 $string['available_from'] = 'Available from:';
 $string['available_to'] = 'Available to:';
+$string['consent'] = 'Consent (optional)';
+$string['consent_help'] = 'If you define a consent text a checkbox appears to the invited users which must be checked by them.';
+$string['consent_title'] = 'Confirmation';
 $string['current_invitation'] = 'Current invitation';
 $string['current_invitation_note'] = 'If you create a new inventation, the old one will automatically become invalid.';
+$string['delete_after_logout'] = 'Delete after logout';
+$string['delete_after_logout_help'] = 'Delete the user immediately after logging out. With this active you cannot see this user in your course logs.';
 $string['edit_invitation'] = 'Edit invitation';
 $string['error_could_not_create_and_enrol'] = 'Error: Could not create and enrol new user!';
 $string['error_invalid_invitation'] = 'Error: This invitation is not valid!';
 $string['error_invitation_not_active'] = 'Error: The invitation feature is not activated on this system.';
 $string['error_timeend_can_not_be_before_timestart'] = 'The invitation can not end before it starts.';
 $string['error_timeend_can_not_be_in_past'] = 'The invitation can not end in the past.';
+$string['expiration_time'] = 'Expiration time (days)';
+$string['expiration_time_help'] = 'A user account created by this plugin will expire after the defined amount of days. A expired account will be anonymized and deleted afterwards.';
 $string['free_slots'] = 'Free slots:';
 $string['info_already_loggedin'] = 'You are already logged in. If you continue you will be logged out.';
 $string['invitation'] = 'Invitation';
@@ -44,7 +61,10 @@ $string['max_users'] = 'Maximum users';
 $string['max_users_per_invitation'] = 'Maximum users per invitation';
 $string['note'] = 'Note:';
 $string['pluginname'] = 'Invitation';
+$string['preventactions'] = 'Prevent actions';
 $string['remove_old_invitations'] = 'Remove old users';
+$string['systemrole'] = 'System role';
+$string['systemrole_help'] = 'If a system role is defined the invited user will be assinged to this. This can be used to restrict the invited user on system level.';
 $string['timeend'] = 'Time end';
 $string['timestart'] = 'Time start';
 $string['usedslots'] = 'Used:';
