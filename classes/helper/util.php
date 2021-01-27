@@ -327,7 +327,7 @@ class util {
         $expiration = empty($mycfg->expiration) ? 1 : $mycfg->expiration;
         $expiration *= datetime::DAY;
         $timeend = datetime::floor_to_day(time()) - $expiration;
-        // Get all invitation users who are deleted not having an invitation anymore.
+        // Get all invitation users who are deleted not having an invitation anymore and delete them.
         $sql = "SELECT ui.id, ui.timecreated
                 FROM {local_invitation_users} ui
                     LEFT JOIN {local_invitation} i ON i.id = ui.invitationid
@@ -341,6 +341,7 @@ class util {
             $DB->delete_records('local_invitation_users', array('id' => $iu->id));
         }
 
+        // Get all old or invalid invitations and delete them.
         $params = array('now' => time());
         $sql = "SELECT i.*
                 FROM {local_invitation} i

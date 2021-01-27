@@ -26,7 +26,10 @@
                     <h2 class="d-inline-block">{{title}}</h2><div class="d-inline-block ml-2">{{{editformbox}}}</div>
                 </div>
                 <div class="invitation-url">
-                    <a href="{{{url}}}">{{{url}}}</a>
+                    <a id="inviteurl-{{uniqid}}" href="{{{url}}}">{{{url}}}</a>
+                    <button id="copy-{{uniqid}}" class="btn btn-secondary" data-toggle="tooltip" title="{{#str}} clipboard, local_invitation {{/str}}">
+                        <i class="fa fa-clipboard"></i>
+                    </button>
                 </div>
                 <div class="row">
                     <div class="col-lg-7">
@@ -82,7 +85,87 @@
                     <span class="font-weight-bold">{{#str}} note, local_invitation {{/str}}</span>
                     <span>{{note}}</span>
                 </div>
+                <div class="back-to-course">
+                    <a href="{{{courseurl}}}" class="btn btn-primary"><i class="fa fa-arrow-left"></i> {{#str}} back_to_course, local_invitation{{/str}}</a>
+                </div>
             </div>
         </div>
     </div>
 </div>
+{{#js}}
+require(['jquery'], function($) {
+    $('#copy-{{uniqid}}xxxx').on('click', function() {
+        $('#inviteurl-{{uniqid}}').popover(
+            {
+                title: "{{#str}} clipboard, local_invitation {{/str}}",
+                content: "{{#str}} link_copied, local_invitation {{/str}}",
+                placement: "top"
+            }
+        );
+        $('#inviteurl-{{uniqid}}').popover('show');
+        setTimeout(function(){
+            $('#inviteurl-{{uniqid}}').popover('hide');
+        }, 3000);
+    });
+
+    $('#copy-{{uniqid}}').on('click', function() {
+        /* Get the text field */
+        copy_to_clipboard($('#inviteurl-{{uniqid}}'));
+
+        // Show a popover.
+        $('#inviteurl-{{uniqid}}').popover(
+            {
+                title: "{{#str}} clipboard, local_invitation {{/str}}",
+                content: "{{#str}} link_copied, local_invitation {{/str}}",
+                placement: "top"
+            }
+        );
+        $('#inviteurl-{{uniqid}}').popover('show');
+        setTimeout(function(){
+            $('#inviteurl-{{uniqid}}').popover('hide');
+        }, 3000);
+
+    });
+
+    var copy_to_clipboard = function(elem) {
+        // Create hidden text element, if it doesn't already exist.
+        var targetId = "hiddenCopyText-{{uniqid}}";
+        var origSelectionStart, origSelectionEnd;
+
+        // must use a temporary form element for the selection and copy
+        target = document.getElementById(targetId);
+        if (!target) {
+            var target = document.createElement("textarea");
+            target.style.position = "absolute";
+            target.style.left = "-9999px";
+            target.style.top = "0";
+            target.id = targetId;
+            document.body.appendChild(target);
+        }
+        target.textContent = elem.text();
+
+        // select the content
+        var currentFocus = document.activeElement;
+        target.focus();
+        target.setSelectionRange(0, target.value.length);
+
+        // copy the selection
+        var succeed;
+        try {
+            succeed = document.execCommand("copy");
+        } catch(e) {
+            succeed = false;
+        }
+        // restore original focus
+        if (currentFocus && typeof currentFocus.focus === "function") {
+            currentFocus.focus();
+        }
+
+        // clear temporary content
+        target.textContent = "";
+
+        return succeed;
+    };
+});
+
+{{/js}}

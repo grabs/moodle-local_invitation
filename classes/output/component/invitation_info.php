@@ -49,6 +49,7 @@ class invitation_info extends base {
         $this->data['timestartwarning'] = $invitation->timestart > time();
         $this->data['timeend'] = userdate($invitation->timeend, $dateformat, 99, false);
         $this->data['timeendwarning'] = $invitation->timeend < time();
+        $this->data['courseurl'] = new \moodle_url('/course/view.php', array('id' => $invitation->courseid));
 
         $this->data['usedslots'] = $usedslots;
         if ($invitation->maxusers != 0) {
