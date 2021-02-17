@@ -261,6 +261,9 @@ class util {
         $DB = gl::db();
         $mycfg = gl::mycfg();
 
+        // First clean old records of already deleted users.
+        self::remove_deleted_users();
+
         $expiration = empty($mycfg->expiration) ? 1 : $mycfg->expiration;
         $expiration *= datetime::DAY;
 
@@ -295,6 +298,24 @@ class util {
         if ($tracing) {
             mtrace('done');
         }
+    }
+
+    public static function remove_deleted_users() {
+        $DB = gl::db();
+
+        $sql = "SELECT u.*
+                FROM {local_invitation_users} iu
+                    JOIN {user} u ON u.id = iu.userid AND u.deleted = 1
+        ";
+
+        if (!$users = $DB->get_records_sql($sql, null)) {
+            return;
+        }
+
+        foreach ($users as $user) {
+            $DB->delete_records('local_invitation_users', array('id' => $user->id));
+        }
+
     }
 
     public static function anonymize_and_delete_user($user) {
