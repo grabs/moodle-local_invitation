@@ -34,6 +34,7 @@ class confirmation extends base {
 
     public function definition() {
         $CFG = gl::cfg();
+        $OUTPUT = gl::output();
         $mycfg = gl::mycfg();
 
         $this->myconfig = get_config('local_invitation');
@@ -56,18 +57,18 @@ class confirmation extends base {
         $mform->setType('id', PARAM_TEXT);
         $mform->setConstant('id', $invitation->secret);
 
-        $mform->addElement('text', 'firstname', get_string('firstname'));
+        // Only the firstname must be set by the guest user. The lastname is set automatically with (guestuser_suffix).
+        $mform->addElement('text', 'firstname', get_string('name'));
         $mform->setType('firstname', PARAM_TEXT);
         $mform->addRule('firstname', null, 'required', null, 'client');
-
-        $mform->addElement('text', 'lastname', get_string('lastname'));
-        $mform->setType('lastname', PARAM_TEXT);
-        $mform->addRule('lastname', null, 'required', null, 'client');
+        if (!empty($mycfg->nameinfo)) { // Should there be an info text to the name field?
+            $mform->addElement('static', 'static1', '', $mycfg->nameinfo);
+            $mform->addElement('html', '<hr>');
+        }
 
         if ($consent = util::get_consent()) {
             $consent = format_text($consent);
             $consenttitle = get_string('consent_title', 'local_invitation');
-            // $mform->addElement('static', 'consenttext', $consenttitle, $consent);
             $mform->addElement('checkbox', 'consent', $consenttitle, $consent);
             $mform->addRule('consent', get_string('required'), 'required', null, 'client');
         }
@@ -75,5 +76,16 @@ class confirmation extends base {
         $submitlabel = get_string('join', 'local_invitation');
         $this->add_action_buttons(true, $submitlabel);
 
+    }
+
+    public function get_data() {
+        if (!$data = parent::get_data()) {
+            return $data;
+        }
+
+        // Add the string "guestuser_suffix" as lastname.
+        $data->lastname = get_string('guestuser_suffix', 'local_invitation');
+
+        return $data;
     }
 }

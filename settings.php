@@ -100,6 +100,13 @@ if ($hassiteconfig) {
     );
 
     $configs[] = new admin_setting_confightmleditor(
+        'nameinfo',
+        get_string('nameinfo', 'local_invitation'),
+        get_string('nameinfo_help', 'local_invitation'),
+        ''
+    );
+
+    $configs[] = new admin_setting_confightmleditor(
         'consent',
         get_string('consent', 'local_invitation'),
         get_string('consent_help', 'local_invitation'),
