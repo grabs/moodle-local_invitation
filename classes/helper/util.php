@@ -133,6 +133,18 @@ class util {
         $user = authenticate_user_login($newuser->username, $newuser->password_raw);
         complete_user_login($user);
 
+        // If there is an acceptance button in the login form we do the consent riht here.
+        if (!empty($confirmdata->consent)) {
+            // Get all policies with acceptance.
+            if ($policies = \tool_policy\api::get_policies_with_acceptances($newuser->id)) {
+                foreach ($policies as $policy) {
+                    foreach ($policy->versions as $version) {
+                        \tool_policy\api::accept_policies($version->id, $newuser->id);
+                    }
+                }
+            }
+        }
+
         if (!empty($mycfg->systemrole)) {
             role_assign($mycfg->systemrole, $user->id, \context_system::instance());
         }
@@ -401,7 +413,7 @@ class util {
 
         $COURSE = gl::course();
 
-        if (!util::is_user_invited($user->id)) {
+        if (!self::is_user_invited($user->id)) {
             return;
         }
 

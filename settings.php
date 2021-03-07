@@ -99,6 +99,13 @@ if ($hassiteconfig) {
         $options
     );
 
+    $configs[] = new admin_setting_configcheckbox(
+        'singlenamefield',
+        get_string('single_name_field', 'local_invitation'),
+        get_string('single_name_field_help', 'local_invitation'),
+        false
+    );
+
     $configs[] = new admin_setting_confightmleditor(
         'nameinfo',
         get_string('nameinfo', 'local_invitation'),

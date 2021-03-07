@@ -57,10 +57,18 @@ class confirmation extends base {
         $mform->setType('id', PARAM_TEXT);
         $mform->setConstant('id', $invitation->secret);
 
-        // Only the firstname must be set by the guest user. The lastname is set automatically with (guestuser_suffix).
+        // Define the firstname field.
         $mform->addElement('text', 'firstname', get_string('name'));
         $mform->setType('firstname', PARAM_TEXT);
         $mform->addRule('firstname', null, 'required', null, 'client');
+
+        if (empty($mycfg->singlenamefield)) {
+            // Define the lastname field.
+            $mform->addElement('text', 'lastname', get_string('name'));
+            $mform->setType('lastname', PARAM_TEXT);
+            $mform->addRule('lastname', null, 'required', null, 'client');
+        }
+
         if (!empty($mycfg->nameinfo)) { // Should there be an info text to the name field?
             $mform->addElement('static', 'static1', '', $mycfg->nameinfo);
             $mform->addElement('html', '<hr>');
@@ -79,12 +87,16 @@ class confirmation extends base {
     }
 
     public function get_data() {
+        $mycfg = gl::mycfg();
+
         if (!$data = parent::get_data()) {
             return $data;
         }
 
-        // Add the string "guestuser_suffix" as lastname.
-        $data->lastname = get_string('guestuser_suffix', 'local_invitation');
+        if (!empty($mycfg->singlenamefield)) {
+            // Add the string "guestuser_suffix" as lastname.
+            $data->lastname = get_string('guestuser_suffix', 'local_invitation');
+        }
 
         return $data;
     }
