@@ -67,14 +67,14 @@ class update extends base {
         $mform->addElement(
             'date_time_selector',
             'timestart',
-            get_string('timestart', 'local_invitation'),
+            get_string('available_from', 'local_invitation'),
             $timeoptions
         );
         $mform->setDefault('timestart', $timestart);
         $mform->addElement(
             'date_time_selector',
             'timeend',
-            get_string('timeend', 'local_invitation'),
+            get_string('available_to', 'local_invitation'),
             $timeoptions
         );
         $mform->setDefault('timeend', $timeend);

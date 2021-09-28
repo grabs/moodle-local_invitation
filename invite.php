@@ -58,6 +58,7 @@ $PAGE->set_title($title);
 $output = $PAGE->get_renderer('local_invitation');
 
 $invitationinfo = '';
+$invitationnote = $output->render_from_template('local_invitation/invitation_note', array('note' => util::get_invitation_note()));
 // Common custom data for both forms (invite and update).
 $customdata = array(
     'courseid' => $courseid,
@@ -71,9 +72,13 @@ if ($invitation = $DB->get_record('local_invitation', array('courseid' => $cours
     $customdata['id'] = $invitation->id; // Append the id to the custom data.
 
     $editform = new \local_invitation\form\update(null, $customdata);
+    $deleteform = new \local_invitation\form\delete(null, $customdata);
 
     $editform->set_data($invitation);
     if ($editform->is_cancelled()) {
+        redirect($myurl);
+    }
+    if ($deleteform->is_cancelled()) {
         redirect($myurl);
     }
 
@@ -97,44 +102,59 @@ if ($invitation = $DB->get_record('local_invitation', array('courseid' => $cours
         }
     }
 
-    $invitewidget = new \local_invitation\output\component\invitation_info($invitation, $editform, $editopen);
+    if ($deleteform->is_submitted()) {
+        if ($deletedata = $deleteform->get_data()) {
+            $DB->delete_records('local_invitation', array('id' => $deletedata->id));
+            // Redirect to the invitation page.
+            redirect(
+                $myurl,
+                get_string('invitation_deleted', 'local_invitation'),
+                null,
+                \core\output\notification::NOTIFY_SUCCESS
+            );
+        }
+    }
+
+    $invitewidget = new \local_invitation\output\component\invitation_info($invitation, $editform, $deleteform, $editopen);
     $invitationinfo = $output->render($invitewidget);
 
+    $formwidget = '';
 } else {
     $autoopen = true;
-}
+    // This is the form to create a new invitation.
+    $inviteform = new \local_invitation\form\invite(null, $customdata);
 
-// This is the form to create a new invitation.
-$inviteform = new \local_invitation\form\invite(null, $customdata);
-
-if ($inviteform->is_cancelled()) {
-    redirect(new \moodle_url('/course/view.php', array('id' => $courseid)));
-}
-
-// We need to check whether or not the form is submitted to be aware of some errors in the form.
-// If there is an error we want the collapse auto open.
-if ($inviteform->is_submitted()) {
-    if ($invitedata = $inviteform->get_data()) {
-        // First delete the old invitation.
-        $DB->delete_records('local_invitation', array('courseid' => $courseid));
-        $invitedata->timemodified = time();
-        $invitedata->secret = util::generate_secret_for_inventation();
-        $DB->insert_record('local_invitation', $invitedata);
-        // Redirect to me to prevent a accidentally reload.
-        redirect(
-            $myurl,
-            get_string('invitation_created', 'local_invitation'),
-            null,
-            \core\output\notification::NOTIFY_SUCCESS
-        );
-    } else {
-        $autoopen = true;
+    if ($inviteform->is_cancelled()) {
+        redirect(new \moodle_url('/course/view.php', array('id' => $courseid)));
     }
-}
 
-$formwidget = new \local_invitation\output\component\form($inviteform, $title, $autoopen);
+    // We need to check whether or not the form is submitted to be aware of some errors in the form.
+    // If there is an error we want the collapse auto open.
+    if ($inviteform->is_submitted()) {
+        if ($invitedata = $inviteform->get_data()) {
+            // First delete the old invitation.
+            $DB->delete_records('local_invitation', array('courseid' => $courseid));
+            $invitedata->timemodified = time();
+            $invitedata->secret = util::generate_secret_for_inventation();
+            $DB->insert_record('local_invitation', $invitedata);
+            // Redirect to me to prevent a accidentally reload.
+            redirect(
+                $myurl,
+                get_string('invitation_created', 'local_invitation'),
+                null,
+                \core\output\notification::NOTIFY_SUCCESS
+            );
+        } else {
+            $autoopen = true;
+        }
+    }
+
+    $formwidget = new \local_invitation\output\component\form($inviteform, $title, $autoopen);
+    $formwidget = $output->render($formwidget);
+}
 
 echo $output->header();
+echo $invitationnote;
 echo $invitationinfo;
-echo $output->render($formwidget);
+echo $formwidget;
 echo $output->footer();

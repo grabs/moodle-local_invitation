@@ -23,6 +23,7 @@
 
 namespace local_invitation\form;
 use local_invitation\helper\date_time as datetime;
+use local_invitation\helper\util;
 use local_invitation\globals as gl;
 
 defined('MOODLE_INTERNAL') || die;
@@ -63,14 +64,14 @@ class invite extends base {
         $mform->addElement(
             'date_time_selector',
             'timestart',
-            get_string('timestart', 'local_invitation'),
+            get_string('available_from', 'local_invitation'),
             $timeoptions
         );
         $mform->setDefault('timestart', $timestart);
         $mform->addElement(
             'date_time_selector',
             'timeend',
-            get_string('timeend', 'local_invitation'),
+            get_string('available_to', 'local_invitation'),
             $timeoptions
         );
         $mform->setDefault('timeend', $timeend);

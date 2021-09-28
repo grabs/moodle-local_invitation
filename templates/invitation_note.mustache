@@ -15,6 +15,10 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_invitation/form
+    @template local_invitation/invitation_note
 }}
-{{> local_invitation/simple_modal_form }}
+
+<div class="d-flex mb-3">
+    <div><i class="fa fa-info-circle fa-lg text-primary pr-2"></i></div>
+    <div class="flex-fill">{{{note}}}</div>
+</div>

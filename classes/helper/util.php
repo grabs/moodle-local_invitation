@@ -443,4 +443,33 @@ class util {
         }
         return $options;
     }
+
+    public static function get_invitation_note() {
+        $mycfg = gl::mycfg();
+
+        $invitationnote1 = get_string('invitation_note', 'local_invitation');
+
+        $expiration = empty($mycfg->expiration) ? 1 : $mycfg->expiration;
+        if ($expiration == 1) { // This means exactly one day!
+            $expirationnote = '24 ' . get_string('hours');
+        } else {
+            $expirationnote = $expiration . ' ' . get_string('days');
+        }
+
+        if (!empty($mycfg->deleteafterlogout)) {
+            $invitationnote2 = get_string(
+                'invitation_delete_note_timeandlogout',
+                'local_invitation',
+                $expirationnote
+            );
+        } else {
+            $invitationnote2 = get_string(
+                'invitation_delete_note_timeonly',
+                'local_invitation',
+                $expirationnote
+            );
+        }
+
+        return $invitationnote1 . ' ' . $invitationnote2;
+    }
 }

@@ -37,6 +37,7 @@ function local_invitation_extend_navigation(global_navigation $navigation) {
     $PAGE = gl::page();
     $COURSE = gl::course();
     $USER = gl::user();
+    $DB = gl::db();
 
     // Prevent some urls to invited users.
     util::prevent_urls($USER);
@@ -67,14 +68,20 @@ function local_invitation_extend_navigation(global_navigation $navigation) {
         }
     }
 
-    $nodetitle = get_string('invite_participants', 'local_invitation');
+    if ($DB->get_record('local_invitation', array('courseid' => $COURSE->id))) {
+        $nodetitle = get_string('edit_invitation', 'local_invitation');
+        $pixname = 'envelope-open';
+    } else {
+        $nodetitle = get_string('invite_participants', 'local_invitation');
+        $pixname = 'envelope';
+    }
     $newnode = navigation_node::create(
         $nodetitle,
         new moodle_url('/local/invitation/invite.php', array('courseid' => $COURSE->id)),
         global_navigation::TYPE_ROOTNODE,
         null,
         null,
-        new pix_icon('i/enrolusers', 'bla')
+        new pix_icon($pixname, 'invitation', 'local_invitation')
     );
     $newnode->showinflatnavigation;
     $newnode->showdivider = true;
@@ -98,4 +105,17 @@ function local_invitation_extend_navigation(global_navigation $navigation) {
 function local_invitation_extend_navigation_course(navigation_node $navigation) {
     global $PAGE, $COURSE;
 
+}
+
+/**
+ * Get icon mapping for FontAwesome.
+ */
+function local_invitation_get_fontawesome_icon_map() {
+    // We build a map of some icons we use in the navigation.
+    $iconmap = array(
+        'local_invitation:envelope' => 'fa-envelope-o',
+        'local_invitation:envelope-open' => 'fa-envelope-open-o',
+    );
+
+    return $iconmap;
 }

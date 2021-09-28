@@ -23,7 +23,11 @@
         <div class="card invitationsettings mb-3 bg-light border border-primary">
             <div class="card-body">
                 <div class="card-title">
-                    <h2 class="d-inline-block">{{title}}</h2><div class="d-inline-block ml-2">{{{editformbox}}}</div>
+                    <div class="d-flex">
+                        <h2>{{title}}</h2>
+                        <div class="ml-2 align-self-center">{{{editformbox}}}</div>
+                        <div class="ml-2 align-self-center">{{{deleteformbox}}}</div>
+                    </div>
                 </div>
                 <div class="invitation-url">
                     <a id="inviteurl-{{uniqid}}" href="{{{url}}}">{{{url}}}</a>
@@ -36,7 +40,7 @@
                         <table class="table table-sm">
                             <tbody>
                                 <tr>
-                                    <th width="120px">
+                                    <th width="190px">
                                         {{#str}} available_from, local_invitation {{/str}}
                                     </th>
                                     <td {{#timestartwarning}}class="text-danger"{{/timestartwarning}}>

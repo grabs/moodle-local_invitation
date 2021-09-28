@@ -30,13 +30,14 @@ defined('MOODLE_INTERNAL') || die();
 class invitation_info extends base {
     private $editwidget;
 
-    public function __construct(\stdClass $invitation, $editform, $autoopen) {
+    public function __construct(\stdClass $invitation, $editform, $deleteform, $autoopen) {
         $DB = gl::db();
         parent::__construct();
 
         $usedslots = $DB->count_records('local_invitation_users', array('invitationid' => $invitation->id));
 
         $this->editwidget = new edit_form_box($editform, $autoopen);
+        $this->deletewidget = new delete_form_box($deleteform);
 
         $urlparams = array(
             'courseid' => $invitation->courseid,
@@ -72,6 +73,7 @@ class invitation_info extends base {
      */
     public function export_for_template(\renderer_base $output) {
         $this->data['editformbox'] = $output->render($this->editwidget);
+        $this->data['deleteformbox'] = $output->render($this->deletewidget);
         return $this->data;
     }
 }
