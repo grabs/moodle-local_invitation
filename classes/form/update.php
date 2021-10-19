@@ -36,7 +36,7 @@ class update extends base {
 
         $this->myconfig = get_config('local_invitation');
         if (empty($this->myconfig->userrole)) {
-            throw new \moodle_exception('userrole not defined in config');
+            throw new \moodle_exception('error_userrole_not_defined', 'local_invitation');
         }
 
         $mform = $this->_form;

@@ -53,9 +53,12 @@ class util {
     public static function get_role_choices($contextlevel) {
 
         $roles = self::get_roles_for_contextlevel($contextlevel);
+        $guestrole = get_guest_role();
+        $roles[$guestrole->id] = $guestrole; // Add guest role to the list.
 
         $choices = role_fix_names($roles, null, ROLENAME_ORIGINAL, true);
         $choices = array(0 => get_string('choose')) + $choices;
+
         return $choices;
     }
 
@@ -175,7 +178,7 @@ class util {
         $user->suspended = 0;
         $user->auth = 'manual';
         $user->email = $user->username.'@'.self::get_email_domain();
-        $user->lang = 'de';
+        $user->lang = $CFG->lang; // We use the system default language. Courses can have there own lang setting.
         $user->id = user_create_user($user, false);
 
         if (empty($user->id)) {
@@ -403,7 +406,7 @@ class util {
         }
     }
 
-    public static function prevent_urls($user) {
+    public static function prevent_actions($user) {
         global $FULLME;
         $mycfg = gl::mycfg();
 
@@ -417,13 +420,17 @@ class util {
             return;
         }
 
-        $preventactions = explode(',', $mycfg->preventactions);
+        $preventactions = str_replace("\r", "\n", $mycfg->preventactions);
+        $preventactions = str_replace("\n\n", "\n", $preventactions);
+        $preventactions = explode("\n", $preventactions);
 
-        foreach (self::PREVENTPATTERNS as $key => $pp) {
-            if (!in_array($key, $preventactions)) {
+        foreach ($preventactions as $action) {
+            $action = trim($action);
+            if (empty($action)) {
                 continue;
             }
-            if (preg_match($pp, $FULLME)) {
+            $pattern = '~'.$action.'~';
+            if (preg_match($pattern, $FULLME)) {
                 $context = \context_course::instance($COURSE->id);
                 if (is_enrolled($context, $user)) {
                     $url = new \moodle_url('/course/view.php', array('id' => $COURSE->id));
@@ -433,6 +440,23 @@ class util {
                 redirect($url);
             }
         }
+    }
+
+    public static function get_default_prevent_actions() {
+        $preventactions = array(
+            'enrol/index.php',
+            'course(/index.php.*|/)$',
+            'calendar/',
+            'grade/',
+            'course/search.php',
+            'user/files.php',
+            'user/profile.php',
+            'user/managetoken.php',
+            'user/preferences.php',
+            'badges/.*',
+            'message/index.php',
+        );
+        return implode("\n", $preventactions);
     }
 
     public static function get_prevent_actions() {

@@ -51,6 +51,7 @@ $string['error_invalid_invitation'] = 'Error: This invitation is not valid!';
 $string['error_invitation_not_active'] = 'Error: The invitation feature is not activated on this system.';
 $string['error_timeend_can_not_be_before_timestart'] = 'The invitation can not end before it starts.';
 $string['error_timeend_can_not_be_in_past'] = 'The invitation can not end in the past.';
+$string['error_userrole_not_defined'] = 'The userrole is not defined in config. Please contact your administrator!';
 $string['expiration_time'] = 'Expiration time (days)';
 $string['expiration_time_help'] = 'A user account created by this plugin will expire after the defined amount of days. A expired account will be anonymized and deleted afterwards.';
 $string['free_slots'] = 'Free slots:';
@@ -74,6 +75,9 @@ $string['nameinfo_help'] = 'With this text you can define a short explanation ho
 $string['note'] = 'Note:';
 $string['pluginname'] = 'Invitation';
 $string['preventactions'] = 'Prevent actions';
+$string['preventactions_help'] = '<strong>Note:</strong> You can define urls or parts of urls wich invited users should not be able to call.<br>
+If the invited user calls such url he is redirected to its course or to the Moodle frontpage.<br>
+You should not include the Dashboard or the frontpage in this list!';
 $string['remove_old_invitations'] = 'Remove old users';
 $string['single_name_field'] = 'Single name field';
 $string['single_name_field_help'] = 'When "single name field" is checked, the user only needs to specify a single name and not a first and last name. In addition a suffix is appended to the name.';

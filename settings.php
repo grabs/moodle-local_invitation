@@ -90,13 +90,13 @@ if ($hassiteconfig) {
         $options
     );
 
-    $options = util::get_prevent_actions();
-    $configs[] = new admin_setting_configmultiselect(
+    $configs[] = new admin_setting_configtextarea(
         'preventactions',
         get_string('preventactions', 'local_invitation'),
-        '',
-        array_keys($options),
-        $options
+        get_string('preventactions_help', 'local_invitation'),
+        util::get_default_prevent_actions(),
+        PARAM_RAW,
+        120, 8
     );
 
     $configs[] = new admin_setting_configcheckbox(

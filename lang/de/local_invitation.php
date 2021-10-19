@@ -51,6 +51,7 @@ $string['error_invalid_invitation'] = 'Fehler! Diese Einladung ist ungültig.';
 $string['error_invitation_not_active'] = 'Fehler! Das Einladungssystem ist auf diesem System nicht aktiviert.';
 $string['error_timeend_can_not_be_before_timestart'] = 'Das Verfügbarkeitsende kann nicht vor dem Beginn liegen.';
 $string['error_timeend_can_not_be_in_past'] = 'Die Einladung kann nicht in der Vergangenheit enden.';
+$string['error_userrole_not_defined'] = 'Es wurde keine Benutzerrolle in der Konfiguration festgelegt. Bitte kontaktieren Sie Ihren Administrator!';
 $string['expiration_time'] = 'Verfallszeit (Tage)';
 $string['expiration_time_help'] = 'Nutzeraccounts, die durch dieses Plugin erstellt wurden, werden nach Ablauf der definierten Zeit anonymisiert und gelöscht.';
 $string['free_slots'] = 'Freie Plätze:';
@@ -74,6 +75,9 @@ $string['nameinfo_help'] = 'Mit diesem Text kann eine kurze Erklärung definiert
 $string['note'] = 'Hinweis:';
 $string['pluginname'] = 'Einladung';
 $string['preventactions'] = 'Aktionen verhindern';
+$string['preventactions_help'] = '<strong>Hinweis:</strong> Es können eigene URLs bzw. URL-Teile definiert werden, die eingeladene Gastnutzer nicht aufrufen sollen.<br>
+Ruft ein Gastnutzer solch eine URL auf, wird er entweder in seinen Kurs oder auf die Moodle-Startseite umgeleitet.<br>
+Sie sollten daher die Startseite sowie das Dashboard nicht in die Liste aufnehmen!';
 $string['remove_old_invitations'] = 'Alte Nutzer entfernen';
 $string['single_name_field'] = 'Einzelnes Namesfeld';
 $string['single_name_field_help'] = 'Bei einem einzelnen Namensfeld muss der Nutzer nur noch einen Namen und nicht mehr Vor- und Nachnamen angeben. Zusätzlich wird ein automatischer Suffix an den Namen angehängt.';

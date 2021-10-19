@@ -40,7 +40,7 @@ function local_invitation_extend_navigation(global_navigation $navigation) {
     $DB = gl::db();
 
     // Prevent some urls to invited users.
-    util::prevent_urls($USER);
+    util::prevent_actions($USER);
 
     if ($COURSE->id == SITEID) {
         return;
