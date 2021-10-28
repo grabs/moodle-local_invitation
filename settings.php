@@ -72,12 +72,13 @@ if ($hassiteconfig) {
         $options
     );
 
+    $guestrole = get_guest_role();
     $options = util::get_role_choices(CONTEXT_COURSE);
     $configs[] = new admin_setting_configselect(
         'userrole',
         get_string('userrole', 'local_invitation'),
         '',
-        null,
+        $guestrole->id,
         $options
     );
 
@@ -86,7 +87,7 @@ if ($hassiteconfig) {
         'systemrole',
         get_string('systemrole', 'local_invitation'),
         get_string('systemrole_help', 'local_invitation'),
-        null,
+        $guestrole->id,
         $options
     );
 

@@ -64,13 +64,20 @@ class confirmation extends base {
         $mform->setConstant('id', $invitation->secret);
 
         // Define the firstname field.
-        $mform->addElement('text', 'firstname', get_string('name'));
+        // If we use a single name field we label it "name" otherwise "firstname".
+        // While using a single name field the lastname is set automatically with "guestuser".
+        if (!empty($mycfg->singlenamefield)) {
+            $firstnamelabel = get_string('name');
+        } else {
+            $firstnamelabel = get_string('firstname');
+        }
+        $mform->addElement('text', 'firstname', $firstnamelabel);
         $mform->setType('firstname', PARAM_TEXT);
         $mform->addRule('firstname', null, 'required', null, 'client');
 
+        // Define the lastname field only if we don't use a single name field.
         if (empty($mycfg->singlenamefield)) {
-            // Define the lastname field.
-            $mform->addElement('text', 'lastname', get_string('name'));
+            $mform->addElement('text', 'lastname', get_string('lastname'));
             $mform->setType('lastname', PARAM_TEXT);
             $mform->addRule('lastname', null, 'required', null, 'client');
         }
