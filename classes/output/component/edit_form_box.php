@@ -27,6 +27,12 @@ use local_invitation\globals as gl;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Renderable and templatable component for the edit form.
+ *
+ * @copyright  2020 Andreas Grabs EDV-Beratung
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class edit_form_box extends base {
     private $editform;
 

@@ -26,6 +26,12 @@ use local_invitation\globals as gl;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * A helper class for time calculations.
+ *
+ * @copyright  2020 Andreas Grabs EDV-Beratung
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class date_time {
     const MINUTE = 60; // For easier usage of a 1 minute time range.
     const HOUR = self::MINUTE * 60; // For easier usage of a 1 hour time range.

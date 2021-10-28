@@ -27,6 +27,12 @@ use local_invitation\globals as gl;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Renderable and templatable component base class.
+ *
+ * @copyright  2020 Andreas Grabs EDV-Beratung
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 abstract class base implements \renderable, \templatable {
 
     protected $data;

@@ -27,6 +27,12 @@ use local_invitation\globals as gl;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Renderable and templatable component for delete box.
+ *
+ * @copyright  2020 Andreas Grabs EDV-Beratung
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class delete_form_box extends base {
     private $deleteform;
 

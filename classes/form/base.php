@@ -29,6 +29,12 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->libdir.'/formslib.php');
 
+/**
+ * Base form class.
+ *
+ * @copyright  2020 Andreas Grabs EDV-Beratung
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 abstract class base extends \moodleform implements \renderable, \templatable {
 
     /**

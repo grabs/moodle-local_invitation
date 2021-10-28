@@ -26,6 +26,12 @@ use local_invitation\helper\date_time as datetime;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Provide all globals we need.
+ *
+ * @copyright  2020 Andreas Grabs EDV-Beratung
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class globals {
     /**
      * Returns the \moodle_database instance

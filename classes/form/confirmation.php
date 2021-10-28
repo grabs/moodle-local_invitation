@@ -28,6 +28,12 @@ use local_invitation\globals as gl;
 
 defined('MOODLE_INTERNAL') || die;
 
+/**
+ * Confirmation form.
+ *
+ * @copyright  2020 Andreas Grabs EDV-Beratung
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class confirmation extends base {
 
     private $myconfig;
