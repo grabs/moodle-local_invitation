@@ -465,15 +465,6 @@ class util {
         return implode("\n", $preventactions);
     }
 
-    public static function get_prevent_actions() {
-        $options = array();
-
-        foreach (self::PREVENTPATTERNS as $key => $pa) {
-            $options[$key] = get_string('action_'.$key, 'local_invitation');
-        }
-        return $options;
-    }
-
     public static function get_invitation_note() {
         $mycfg = gl::mycfg();
 

@@ -21,17 +21,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['action_badges'] = 'Show badges';
-$string['action_calendar'] = 'Show calendar';
-$string['action_coursejump'] = 'Show course jump';
-$string['action_courselist'] = 'Show course list';
-$string['action_coursesearch'] = 'Show course search';
-$string['action_enrolment'] = 'Enrolment';
-$string['action_gradebook'] = 'Show gradebook';
-$string['action_managetoken'] = 'Manage token';
-$string['action_messages'] = 'Show messages';
-$string['action_profile'] = 'Show profile';
-$string['action_userpreferences'] = 'Show user preferences';
 $string['available_from'] = 'Available from:';
 $string['available_to'] = 'Available to:';
 $string['back_to_course'] = 'Back to your course';
@@ -78,7 +67,9 @@ $string['preventactions'] = 'Prevent actions';
 $string['preventactions_help'] = '<strong>Note:</strong> You can define urls or parts of urls wich invited users should not be able to call.<br>
 If the invited user calls such url he is redirected to its course or to the Moodle frontpage.<br>
 You should not include the Dashboard or the frontpage in this list!';
+$string['qrcode'] = 'QR Code';
 $string['remove_old_invitations'] = 'Remove old users';
+$string['showqrcode'] = 'Show QR Code';
 $string['single_name_field'] = 'Single name field';
 $string['single_name_field_help'] = 'When "single name field" is checked, the user only needs to specify a single name and not a first and last name. In addition a suffix is appended to the name.';
 $string['systemrole'] = 'System role';

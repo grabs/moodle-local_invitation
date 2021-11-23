@@ -23,8 +23,8 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version  = 2021102800;
-$plugin->release = '3.9 (2021102800)';
+$plugin->version  = 2021112300;
+$plugin->release = 'v3.9.2 (2021112300)';
 $plugin->requires = 2020060900;
 $plugin->maturity = MATURITY_STABLE;
 $plugin->component = 'local_invitation';

@@ -49,14 +49,17 @@ class invitation_info extends base {
             'courseid' => $invitation->courseid,
             'id' => $invitation->secret,
         );
+        $courseurl = new \moodle_url('/course/view.php', array('id' => $invitation->courseid));
+        $invitationurl = new \moodle_url('/local/invitation/join.php', $urlparams);
+
         $dateformat = get_string('strftimedatetimeshort');
         $this->data['title'] = get_string('current_invitation', 'local_invitation');
-        $this->data['url'] = new \moodle_url('/local/invitation/join.php', $urlparams);
+        $this->data['url'] = $invitationurl;
         $this->data['timestart'] = userdate($invitation->timestart, $dateformat, 99, false);
         $this->data['timestartwarning'] = $invitation->timestart > time();
         $this->data['timeend'] = userdate($invitation->timeend, $dateformat, 99, false);
         $this->data['timeendwarning'] = $invitation->timeend < time();
-        $this->data['courseurl'] = new \moodle_url('/course/view.php', array('id' => $invitation->courseid));
+        $this->data['courseurl'] = $courseurl;
 
         $this->data['usedslots'] = $usedslots;
         if ($invitation->maxusers != 0) {
@@ -67,6 +70,11 @@ class invitation_info extends base {
             $this->data['slots'] = get_string('unlimited');
             $this->data['freeslots'] = true;
         }
+
+        $qrcode = new \core_qrcode($this->data['url']->out());
+        $this->data['qrcodetitle'] = get_string('qrcode', 'local_invitation');
+        $this->data['qrcodebuttontitle'] = get_string('showqrcode', 'local_invitation');
+        $this->data['qrcodeimg'] = 'data:image/png;base64,' . base64_encode((string) $qrcode->getBarcodePngData(5, 5));
 
         $this->data['note'] = get_string('current_invitation_note', 'local_invitation');
     }

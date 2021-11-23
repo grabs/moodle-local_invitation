@@ -50,7 +50,7 @@ $myurl->param('courseid', $courseid);
 /** @var \moodle_page $PAGE */
 $PAGE->set_url($myurl);
 $PAGE->set_context($context);
-$PAGE->set_pagelayout('course');
+$PAGE->set_pagelayout('admin');
 $PAGE->set_heading($course->fullname);
 $PAGE->set_title($title);
 
