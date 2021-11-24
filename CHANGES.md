@@ -4,6 +4,10 @@ moodle-local_invitation
 Changes
 -------
 
+### v3.9.3
+
+* 2021-11-24 - fix url in qr-code
+
 ### v3.9.2
 
 * 2021-11-23 - add qr-code to info page

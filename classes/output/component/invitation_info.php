@@ -71,7 +71,7 @@ class invitation_info extends base {
             $this->data['freeslots'] = true;
         }
 
-        $qrcode = new \core_qrcode($this->data['url']->out());
+        $qrcode = new \core_qrcode($invitationurl->out(false));
         $this->data['qrcodetitle'] = get_string('qrcode', 'local_invitation');
         $this->data['qrcodebuttontitle'] = get_string('showqrcode', 'local_invitation');
         $this->data['qrcodeimg'] = 'data:image/png;base64,' . base64_encode((string) $qrcode->getBarcodePngData(5, 5));
