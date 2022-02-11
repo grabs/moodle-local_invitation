@@ -1,4 +1,4 @@
-name: master branch test
+name: STABLE branch test
 
 on: [push, pull_request]
 
@@ -40,11 +40,19 @@ jobs:
       matrix:
         include:
           - php: '7.3'
-            moodle-branch: 'master'
+            moodle-branch: 'MOODLE_39_STABLE'
             database: 'mariadb'
             node: '14.15'
           - php: '7.3'
-            moodle-branch: 'master'
+            moodle-branch: 'MOODLE_311_STABLE'
+            database: 'mariadb'
+            node: '14.15'
+          - php: '7.3'
+            moodle-branch: 'MOODLE_39_STABLE'
+            database: 'pgsql'
+            node: '14.15'
+          - php: '7.3'
+            moodle-branch: 'MOODLE_311_STABLE'
             database: 'pgsql'
             node: '14.15'
 
