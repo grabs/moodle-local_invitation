@@ -24,8 +24,6 @@
 namespace local_invitation\helper;
 use local_invitation\globals as gl;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * A helper class for time calculations.
  *
@@ -37,17 +35,39 @@ class date_time {
     const HOUR = self::MINUTE * 60; // For easier usage of a 1 hour time range.
     const DAY = self::HOUR * 24; // For easier usage of a 24 hour time range.
 
+    /**
+     * Get the month from the given timestamp
+     *
+     * @param integer $timestamp
+     * @return integer A number between 1 and 12
+     */
     public static function get_month(int $timestamp) : int {
         $month = date('n', $timestamp);
         return intval($month);
     }
 
+    /**
+     * Get the Year from the given timestamp
+     *
+     * @param integer $timestamp
+     * @return integer
+     */
     public static function get_year(int $timestamp) : int {
         $year = date('Y', $timestamp);
         return intval($year);
     }
 
-    public static function get_stamp_from_parts($year, $month, $day, $hour = 0, $minute = 0) {
+    /**
+     * Get a valid timestamp from parts of strings related to a date.
+     *
+     * @param string $year
+     * @param string $month
+     * @param string $day
+     * @param string $hour
+     * @param string $minute
+     * @return int The timestamp
+     */
+    public static function get_stamp_from_parts($year, $month, $day, $hour = '0', $minute = '0') {
         return strtotime($year.'-'.$month.'-'.$day.' '.$hour.':'.$minute);
     }
 

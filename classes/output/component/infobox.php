@@ -25,8 +25,6 @@ namespace local_invitation\output\component;
 use local_invitation\helper\date_time as datetime;
 use local_invitation\globals as gl;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Renderable and templatable component for the infobox.
  *
@@ -35,6 +33,12 @@ defined('MOODLE_INTERNAL') || die();
  */
 class infobox extends base {
 
+    /**
+     * Constructor
+     *
+     * @param string $title
+     * @param string $text
+     */
     public function __construct($title, $text) {
         parent::__construct();
         $this->data['title'] = $title;

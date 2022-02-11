@@ -27,6 +27,11 @@
             <div class="collapse{{#autoopen}} show{{/autoopen}}" id="collapse-{{uniqid}}">
                 <div class="card-body">
                     {{{formcontent}}}
+                    {{#backurl}}
+                    <div class="back-to-course">
+                        <a href="{{{.}}}" class="btn btn-primary"><i class="fa fa-arrow-left"></i> {{#str}} back_to_course, local_invitation{{/str}}</a>
+                    </div>
+                    {{/backurl}}
                 </div>
             </div>
         </div>

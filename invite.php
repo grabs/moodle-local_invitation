@@ -46,6 +46,7 @@ $title = get_string('invite_participants', 'local_invitation');
 $myurl = new \moodle_url($FULLME);
 $myurl->remove_all_params();
 $myurl->param('courseid', $courseid);
+$courseurl = new \moodle_url('/course/view.php', array('id' => $courseid));
 
 /** @var \moodle_page $PAGE */
 $PAGE->set_url($myurl);
@@ -53,6 +54,18 @@ $PAGE->set_context($context);
 $PAGE->set_pagelayout('admin');
 $PAGE->set_heading($course->fullname);
 $PAGE->set_title($title);
+
+if (!course_format_uses_sections($course->format)) {
+    $coursesurl = new \moodle_url('/course/index.php');
+    $coursename = empty($CFG->navshowfullcoursenames) ?
+        format_string($course->shortname, true, array('context' => $context)) :
+        format_string($course->fullname, true, array('context' => $context));
+
+    $PAGE->navbar->ignore_active();
+    $PAGE->navbar->add(get_string('courses'), $coursesurl);
+    $PAGE->navbar->add(s($coursename), $courseurl);
+    $PAGE->navbar->add($title, $myurl);
+}
 
 /** @var \local_invitation\output\renderer $output */
 $output = $PAGE->get_renderer('local_invitation');
@@ -86,10 +99,9 @@ if ($invitation = $DB->get_record('local_invitation', array('courseid' => $cours
     // If there is an error we want the modal box auto open.
     if ($editform->is_submitted()) {
         if ($invitedata = $editform->get_data()) {
-            $invitation->timestart = $invitedata->timestart;
-            $invitation->timeend = $invitedata->timeend;
-            $invitation->maxusers = $invitedata->maxusers;
-            $DB->update_record('local_invitation', $invitation);
+            if (!util::update_invitation($invitation, $invitedata)) {
+                throw new \moodle_exception('could not update invitation');
+            }
             // Redirect to the invitation page.
             redirect(
                 $myurl,
@@ -104,7 +116,9 @@ if ($invitation = $DB->get_record('local_invitation', array('courseid' => $cours
 
     if ($deleteform->is_submitted()) {
         if ($deletedata = $deleteform->get_data()) {
-            $DB->delete_records('local_invitation', array('id' => $deletedata->id));
+            if (!util::delete_invitation($deletedata->id)) {
+                throw new \moodle_exception('could not delete invitation');
+            }
             // Redirect to the invitation page.
             redirect(
                 $myurl,
@@ -132,11 +146,10 @@ if ($invitation = $DB->get_record('local_invitation', array('courseid' => $cours
     // If there is an error we want the collapse auto open.
     if ($inviteform->is_submitted()) {
         if ($invitedata = $inviteform->get_data()) {
-            // First delete the old invitation.
-            $DB->delete_records('local_invitation', array('courseid' => $courseid));
-            $invitedata->timemodified = time();
-            $invitedata->secret = util::generate_secret_for_inventation();
-            $DB->insert_record('local_invitation', $invitedata);
+            // Create the new invitation.
+            if (!util::create_invitation($invitedata)) {
+                throw new \moodle_exception('could not create invitation');
+            }
             // Redirect to me to prevent a accidentally reload.
             redirect(
                 $myurl,
@@ -149,7 +162,7 @@ if ($invitation = $DB->get_record('local_invitation', array('courseid' => $cours
         }
     }
 
-    $formwidget = new \local_invitation\output\component\form($inviteform, $title, $autoopen);
+    $formwidget = new \local_invitation\output\component\form($inviteform, $title, $autoopen, $courseurl);
     $formwidget = $output->render($formwidget);
 }
 

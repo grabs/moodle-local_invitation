@@ -25,8 +25,6 @@ namespace local_invitation\output\component;
 use local_invitation\helper\date_time as datetime;
 use local_invitation\globals as gl;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Renderable and templatable component for delete box.
  *
@@ -36,6 +34,11 @@ defined('MOODLE_INTERNAL') || die();
 class delete_form_box extends base {
     private $deleteform;
 
+    /**
+     * Constructor
+     *
+     * @param \local_invitation\form\base $deleteform
+     */
     public function __construct($deleteform) {
         $DB = gl::db();
         parent::__construct();

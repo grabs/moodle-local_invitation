@@ -25,8 +25,6 @@ namespace local_invitation\output\component;
 use local_invitation\helper\date_time as datetime;
 use local_invitation\globals as gl;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Renderable and templatable component for the edit form.
  *
@@ -36,6 +34,12 @@ defined('MOODLE_INTERNAL') || die();
 class edit_form_box extends base {
     private $editform;
 
+    /**
+     * Constructor
+     *
+     * @param \local_invitation\form\base $editform
+     * @param bool $autoopen
+     */
     public function __construct($editform, $autoopen) {
         $DB = gl::db();
         parent::__construct();

@@ -4,6 +4,12 @@ moodle-local_invitation
 Changes
 -------
 
+### v3.9.4
+
+* 2022-02-11 - fix issue #1 (https://github.com/grabs/moodle-local_invitation/issues/1)
+* 2022-02-11 - add automated testing (unit test and behat)
+* 2022-02-11 - add github actions
+
 ### v3.9.3
 
 * 2021-11-24 - fix url in qr-code

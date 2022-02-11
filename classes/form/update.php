@@ -25,8 +25,6 @@ namespace local_invitation\form;
 use local_invitation\helper\date_time as datetime;
 use local_invitation\globals as gl;
 
-defined('MOODLE_INTERNAL') || die;
-
 /**
  * The update form.
  *
@@ -37,6 +35,11 @@ class update extends base {
 
     private $myconfig;
 
+    /**
+     * Form definition.
+     *
+     * @return void
+     */
     public function definition() {
         global $CFG;
 
@@ -95,7 +98,7 @@ class update extends base {
      * @global \moodle_database $DB
      * @param \stdClass $data
      * @param array $files
-     * @return void
+     * @return array
      */
     public function validation($data, $files) {
         $DB = gl::db();

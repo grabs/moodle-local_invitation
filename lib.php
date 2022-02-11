@@ -25,8 +25,6 @@ use local_invitation\helper\date_time as datetime;
 use local_invitation\helper\util as util;
 use local_invitation\globals as gl;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Fumble with Moodle's global navigation by leveraging Moodle's *_extend_navigation() hook.
  *
@@ -87,12 +85,17 @@ function local_invitation_extend_navigation(global_navigation $navigation) {
     $newnode->showdivider = true;
     $newnode->collectionlabel = $nodetitle;
 
-    $myhomenode = $navigation->find($COURSE->id, global_navigation::TYPE_COURSE);
-    foreach ($myhomenode->children as $c) {
-        $c->showdivider = true;
-        $c->collectionlabel = $c->shorttext;
-        $myhomenode->add_node($newnode, $c->key);
-        return;
+    if (course_format_uses_sections($COURSE->format)) {
+        $myhomenode = $navigation->find($COURSE->id, global_navigation::TYPE_COURSE);
+        foreach ($myhomenode->children as $c) {
+            $c->showdivider = true;
+            $c->collectionlabel = $c->shorttext;
+            $myhomenode->add_node($newnode, $c->key);
+            return;
+        }
+    } else {
+        $node = $navigation->add_node($newnode, SITEID);
+        $node->showinflatnavigation = true;
     }
 }
 

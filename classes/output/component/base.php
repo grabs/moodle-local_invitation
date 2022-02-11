@@ -25,8 +25,6 @@ namespace local_invitation\output\component;
 use local_invitation\helper\date_time as datetime;
 use local_invitation\globals as gl;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Renderable and templatable component base class.
  *
@@ -37,9 +35,18 @@ abstract class base implements \renderable, \templatable {
 
     protected $data;
 
+    /**
+     * Constructor.
+     */
     public function __construct() {
         $this->data = array();
     }
 
+    /**
+     * Export the data for usage in mustache.
+     *
+     * @param \renderer_base $output
+     * @return array
+     */
     abstract public function export_for_template(\renderer_base $output);
 }

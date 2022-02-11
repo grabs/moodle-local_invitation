@@ -26,8 +26,6 @@ use local_invitation\helper\date_time as datetime;
 use local_invitation\helper\util;
 use local_invitation\globals as gl;
 
-defined('MOODLE_INTERNAL') || die;
-
 /**
  * Confirmation form.
  *
@@ -38,6 +36,11 @@ class confirmation extends base {
 
     private $myconfig;
 
+    /**
+     * Form definition.
+     *
+     * @return void
+     */
     public function definition() {
         $CFG = gl::cfg();
         $OUTPUT = gl::output();
@@ -99,6 +102,11 @@ class confirmation extends base {
 
     }
 
+    /**
+     * Get the form data
+     *
+     * @return array|object
+     */
     public function get_data() {
         $mycfg = gl::mycfg();
 

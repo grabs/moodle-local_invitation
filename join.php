@@ -79,13 +79,6 @@ if ($confirmdata = $confirmform->get_data()) {
         throw new \moodle_exception('error_could_not_create_and_enrol', 'local_invitation');
     }
 
-    // Log this user in our table.
-    $newuserrecord = new \stdClass();
-    $newuserrecord->invitationid = $invitation->id;
-    $newuserrecord->userid = $newuser->id;
-    $newuserrecord->timecreated = time();
-    $DB->insert_record('local_invitation_users', $newuserrecord);
-
     $welcomenote = new \local_invitation\output\component\welcome_note($newuser);
     $urlparams = array(
         'id' => $invitation->courseid,

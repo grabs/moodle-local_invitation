@@ -24,8 +24,6 @@
 namespace local_invitation;
 use local_invitation\helper\date_time as datetime;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Provide all globals we need.
  *
@@ -94,6 +92,11 @@ class globals {
         return $CFG;
     }
 
+    /**
+     * Returns the plugin configuration.
+     *
+     * @return \stdClass
+     */
     public static function mycfg() {
         static $mycfg;
 

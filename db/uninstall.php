@@ -25,8 +25,6 @@ use local_invitation\helper\date_time as datetime;
 use local_invitation\helper\util as util;
 use local_invitation\globals as gl;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * This is called at the beginning of the uninstallation process to give the module
  * a chance to clean-up its hacks, bits etc. where possible.

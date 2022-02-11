@@ -51,6 +51,12 @@ abstract class base extends \moodleform implements \renderable, \templatable {
         return $data;
     }
 
+    /**
+     * Get an option list array to use in select boxes.
+     *
+     * @param int $maxusers
+     * @return array
+     */
     public static function get_maxusers_options($maxusers) {
 
         if ($maxusers == 0) {
@@ -77,6 +83,11 @@ abstract class base extends \moodleform implements \renderable, \templatable {
         return $options;
     }
 
+    /**
+     * Get an option array for expiration select box
+     *
+     * @return array
+     */
     public static function get_expiration_options() {
 
         $optionslow = array_combine(range(1, 49), range(1, 49));

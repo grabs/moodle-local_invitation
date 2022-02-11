@@ -25,8 +25,6 @@ namespace local_invitation\helper;
 use local_invitation\helper\date_time as datetime;
 use local_invitation\globals as gl;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Utility class.
  *
@@ -54,6 +52,7 @@ class util {
      * Get all roles as choice parameters.
      * Because we need them more than once so we define it here.
      *
+     * @param int $contextlevel The contextlevel the roles have to be assignable.
      * @return array
      */
     public static function get_role_choices($contextlevel) {
@@ -68,6 +67,13 @@ class util {
         return $choices;
     }
 
+    /**
+     * Get all roles.
+     * Because we need them more than once so we define it here.
+     *
+     * @param int $contextlevel The contextlevel the roles have to be assignable.
+     * @return array The array with role records.
+     */
     public static function get_roles_for_contextlevel($contextlevel) {
         $DB = gl::db();
 
@@ -82,6 +88,11 @@ class util {
         return $DB->get_records_sql($sql, $params);
     }
 
+    /**
+     * Generate a secret used by an invitation.
+     *
+     * @return string
+     */
     public static function generate_secret_for_inventation() {
         $DB = gl::db();
 
@@ -92,6 +103,56 @@ class util {
         return $secret;
     }
 
+    /**
+     * Create an invitation in the database.
+     *
+     * @param \stdClass $invitedata
+     * @return bool|int
+     */
+    public static function create_invitation($invitedata) {
+        $DB = gl::db();
+
+        $DB->delete_records('local_invitation', array('courseid' => $invitedata->courseid));
+        $invitedata->timemodified = time();
+        $invitedata->secret = self::generate_secret_for_inventation();
+        return $DB->insert_record('local_invitation', $invitedata);
+    }
+
+    /**
+     * Update an invitation
+     *
+     * @param \stdClass $invitation
+     * @param \stdClass $updatedata
+     * @return bool
+     */
+    public static function update_invitation($invitation, $updatedata) {
+        $DB = gl::db();
+
+        $invitation->timestart = $updatedata->timestart;
+        $invitation->timeend = $updatedata->timeend;
+        $invitation->maxusers = $updatedata->maxusers;
+        return $DB->update_record('local_invitation', $invitation);
+    }
+
+    /**
+     * Delete an invitation
+     *
+     * @param int $invitationid
+     * @return bool
+     */
+    public static function delete_invitation($invitationid) {
+        $DB = gl::db();
+
+        return $DB->delete_records('local_invitation', array('id' => $invitationid));
+    }
+
+    /**
+     * Get an invitation using its secret.
+     *
+     * @param string $secret
+     * @param int $courseid
+     * @return \stdClass
+     */
     public static function get_invitation_from_secret($secret, $courseid) {
         $DB = gl::db();
 
@@ -121,6 +182,13 @@ class util {
         return $invitation;
     }
 
+    /**
+     * Create a new temporary user, log in and enrol him.
+     *
+     * @param \stdClass $invitation
+     * @param \stdClass $confirmdata
+     * @return \stdClass|bool The new user record or false
+     */
     public static function create_login_and_enrol($invitation, $confirmdata) {
         $DB = gl::db();
         $mycfg = gl::mycfg();
@@ -129,7 +197,7 @@ class util {
         $transaction = $DB->start_delegated_transaction();
 
         try {
-            $newuser = self::create_login($invitation->secret, $confirmdata->firstname, $confirmdata->lastname);
+            $newuser = self::create_login($confirmdata->firstname, $confirmdata->lastname);
             self::enrol_user($invitation->courseid, $invitation->userrole, $newuser);
         } catch (\moodle_exception $e) {
             return false;
@@ -140,7 +208,12 @@ class util {
 
         // The user exists and we can now login him.
         $user = authenticate_user_login($newuser->username, $newuser->password_raw);
-        complete_user_login($user);
+        if (PHPUNIT_TEST) {
+            // Hide session header errors in unit test.
+            @complete_user_login($user);
+        } else {
+            complete_user_login($user);
+        }
 
         // If there is an acceptance button in the login form we do the consent riht here.
         if (!empty($confirmdata->consent)) {
@@ -158,14 +231,24 @@ class util {
             role_assign($mycfg->systemrole, $user->id, \context_system::instance());
         }
 
+        // Log this user in our table.
+        $newuserrecord = new \stdClass();
+        $newuserrecord->invitationid = $invitation->id;
+        $newuserrecord->userid = $user->id;
+        $newuserrecord->timecreated = time();
+        $DB->insert_record('local_invitation_users', $newuserrecord);
+
         return $user;
     }
 
     /**
      * Create a new user to login into the democourse.
+     *
+     * @param string $firstname
+     * @param string $lastname
      * @return \stdClass the new created user
      */
-    private static function create_login($secret, $firstname, $lastname) {
+    private static function create_login($firstname, $lastname) {
         $CFG = gl::cfg();
 
         require_once($CFG->dirroot.'/user/lib.php');
@@ -200,6 +283,7 @@ class util {
     /**
      * This enrols the given user into the course of $this->demologin->democourseid.
      * @param int $courseid
+     * @param int $roleid
      * @param \stdClass $user
      * @return void
      */
@@ -221,6 +305,8 @@ class util {
 
     /**
      * Get a not used username.
+     *
+     * @param $prefix
      * @return string the new username
      */
     private static function get_free_username($prefix) {
@@ -247,11 +333,22 @@ class util {
         return $domain;
     }
 
+    /**
+     * Is the plugin activated?
+     *
+     * @return boolean
+     */
     public static function is_active() {
         $cfg = get_config('local_invitation');
         return (bool) $cfg->active;
     }
 
+    /**
+     * Is the given user an invited user?
+     *
+     * @param int $userid
+     * @return boolean
+     */
     public static function is_user_invited($userid) {
         $DB = gl::db();
 
@@ -260,17 +357,33 @@ class util {
         }
     }
 
+    /**
+     * Get the consent string from settings.
+     *
+     * @return string
+     */
     public static function get_consent() {
         $mycfg = gl::mycfg();
         $consent = $mycfg->consent;
         return $consent;
     }
+
+    /**
+     * If not activated an error is thrown.
+     *
+     * @return void
+     */
     public static function require_active() {
         if (!self::is_active()) {
             throw new \moodle_exception('error_invitation_not_active', 'local_invitation');
         }
     }
 
+    /**
+     * Set all users as expired.
+     *
+     * @return void
+     */
     public static function set_all_users_expired() {
         $DB = gl::db();
 
@@ -278,6 +391,12 @@ class util {
         $DB->execute($sql);
     }
 
+    /**
+     * Delete expired users and anonymize them before deleting.
+     *
+     * @param boolean $tracing
+     * @return void
+     */
     public static function anonymize_and_delete_expired_users($tracing = false) {
         $DB = gl::db();
         $mycfg = gl::mycfg();
@@ -321,6 +440,11 @@ class util {
         }
     }
 
+    /**
+     * Remove deleted users from our table. Just to clean up things.
+     *
+     * @return void
+     */
     public static function remove_deleted_users() {
         $DB = gl::db();
 
@@ -339,6 +463,12 @@ class util {
 
     }
 
+    /**
+     * Anonymize and delete the given user.
+     *
+     * @param \stdClass $user
+     * @return void
+     */
     public static function anonymize_and_delete_user($user) {
         $DB = gl::db();
 
@@ -355,6 +485,7 @@ class util {
     /**
      * Remove expired invitations and those which has an invalid course id
      *
+     * @param bool $tracing
      * @return void
      */
     public static function remove_old_invitations($tracing = false) {
@@ -412,6 +543,12 @@ class util {
         }
     }
 
+    /**
+     * Check if the current url is some of the prevent actions. If so we redirect the user to the default homepage.
+     *
+     * @param \stdClass $user
+     * @return void
+     */
     public static function prevent_actions($user) {
         global $FULLME;
         $mycfg = gl::mycfg();
@@ -448,6 +585,11 @@ class util {
         }
     }
 
+    /**
+     * Get the default prevent actions using in settings.
+     *
+     * @return string
+     */
     public static function get_default_prevent_actions() {
         $preventactions = array(
             'enrol/index.php',
@@ -465,6 +607,11 @@ class util {
         return implode("\n", $preventactions);
     }
 
+    /**
+     * Get a notification text combined from two strings.
+     *
+     * @return string
+     */
     public static function get_invitation_note() {
         $mycfg = gl::mycfg();
 

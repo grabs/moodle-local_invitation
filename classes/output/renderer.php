@@ -25,8 +25,6 @@ namespace local_invitation\output;
 use local_invitation\helper\date_time as datetime;
 use local_invitation\globals as gl;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * A dummy renderer class just to make it overridable by themes.
  *

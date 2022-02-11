@@ -25,8 +25,6 @@ namespace local_invitation\output\component;
 use local_invitation\helper\date_time as datetime;
 use local_invitation\globals as gl;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Renderable and templatable component for a moodle form.
  *
@@ -36,12 +34,20 @@ defined('MOODLE_INTERNAL') || die();
 class form extends base {
     private $mform;
 
-    public function __construct(\local_invitation\form\base $mform, $title, $autoopen = false) {
+    /**
+     * Constructor
+     *
+     * @param \local_invitation\form\base $deleteform
+     * @param bool $autoopen
+     * @param \moodle_url|string $backurl
+     */
+    public function __construct($mform, $title, $autoopen = false, $backurl = null) {
         parent::__construct();
 
         $this->mform = $mform;
         $this->data['title'] = $title;
         $this->data['autoopen'] = $autoopen;
+        $this->data['backurl'] = $backurl;
     }
 
     /**

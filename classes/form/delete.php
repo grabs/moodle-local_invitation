@@ -25,8 +25,6 @@ namespace local_invitation\form;
 use local_invitation\helper\date_time as datetime;
 use local_invitation\globals as gl;
 
-defined('MOODLE_INTERNAL') || die;
-
 /**
  * Delete form.
  *
@@ -35,8 +33,11 @@ defined('MOODLE_INTERNAL') || die;
  */
 class delete extends base {
 
-    private $myconfig;
-
+    /**
+     * Form definition.
+     *
+     * @return void
+     */
     public function definition() {
         global $CFG;
 
