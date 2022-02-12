@@ -15,6 +15,22 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_invitation/form
+    @template local_invitation/delete_form_box
+
+    A template using the local_invitation/form template.
+
+    Context variables required for this template:
+    * title       - String used as title
+    * autoopen    - Boolean flag to autoopen the collapsed content
+    * formcontent - String the mform content
+    * backurl     - String the url to go back after using this form
+
+    Example context (json):
+    {
+        "title": "Create an invitation",
+        "autoopen": 1,
+        "backurl": "https://domain.tld/example",
+        "formcontent": "<div>formcontent</div>"
+    }
 }}
 {{> local_invitation/simple_modal_form }}

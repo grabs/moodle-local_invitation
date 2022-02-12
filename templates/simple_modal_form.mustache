@@ -15,7 +15,23 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_invitation/form
+    @template local_invitation/simple_modal_form
+
+    A template printing a button to show a modal box with an mform including a button to post the form.
+
+    Context variables required for this template:
+    * title
+    * linktitle
+    * formcontent
+    * autoopen
+
+    Example context (json):
+    {
+        "title": "New invitation",
+        "linktitle": "<i class=\"fa fa-plus-circle\"></i> New invitation",
+        "formcontent": "<div>formcontent</div>",
+        "autoopen": 1
+    }
 }}
 <a href="" id="modalbutton-{{uniqid}}" data-toggle="modal" data-target="#modalform-{{uniqid}}" title="{{title}}">{{{linktitle}}}</a>
 <div class="modal fade" id="modalform-{{uniqid}}">

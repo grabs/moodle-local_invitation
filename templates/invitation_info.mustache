@@ -16,6 +16,44 @@
 }}
 {{!
     @template local_invitation/invitation_info
+
+    A template to show the invitation info including the invite url and a qu-code
+
+    Context variables required for this template:
+    * title
+    * editformbox
+    * deleteformbox
+    * qrcodebutton
+    * url
+    * timestartwarning
+    * timestart
+    * timeendwarning
+    * timeend
+    * usedslots
+    * freeslots
+    * slots
+    * qrcodeimg
+    * note
+    * courseurl
+
+    Example context (json):
+    {
+        "title": "Create an invitation",
+        "editformbox": "<div>edit form content</div>",
+        "deleteformbox": "<div>delete form content</div>",
+        "qrcodebutton": "<div>content with qr-code</div>",
+        "url": "https://....",
+        "timestartwarning": 0,
+        "timestart": "2022-02-08 10:00",
+        "timeendwarning": 1,
+        "timeend": "2022-02-08 12:00",
+        "usedslots": 12,
+        "freeslots": 3,
+        "slots": 15,
+        "qrcodeimg": "svg string",
+        "note": "created",
+        "courseurl": "https://..."
+    }
 }}
 
 <div class="row">

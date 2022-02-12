@@ -1,5 +1,5 @@
 @local @local_invitation
-Feature: Create a new invitation
+Feature: Use an invitation as guest user
   Background:
     Given the following "users" exist:
       | username | firstname | lastname |

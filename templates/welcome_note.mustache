@@ -16,6 +16,16 @@
 }}
 {{!
     @template local_invitation/welcome_note
+
+    A template printing a welcome note.
+
+    Context variables required for this template:
+    * text - String
+
+    Example context (json):
+    {
+        "text": "Welcome George!"
+    }
 }}
 
 <h2>{{text}}</h2>

@@ -1,5 +1,5 @@
 @local @local_invitation
-Feature: Create a new invitation
+Feature: Create new and delete existing invitations
   Background:
     Given the following "users" exist:
       | username | firstname | lastname |

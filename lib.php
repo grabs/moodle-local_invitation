@@ -51,7 +51,10 @@ function local_invitation_extend_navigation(global_navigation $navigation) {
     $context = \context_course::instance($COURSE->id);
     // Are we really on the course page or maybe in an activity page?
     if ($PAGE->context->id !== $context->id) {
-        return;
+        // If the course has no sections the activity page might be the course page.
+        if (course_format_uses_sections($COURSE->format)) {
+            return;
+        }
     }
 
     if (!has_capability('local/invitation:manage', $context)) {
@@ -85,17 +88,12 @@ function local_invitation_extend_navigation(global_navigation $navigation) {
     $newnode->showdivider = true;
     $newnode->collectionlabel = $nodetitle;
 
-    if (course_format_uses_sections($COURSE->format)) {
-        $myhomenode = $navigation->find($COURSE->id, global_navigation::TYPE_COURSE);
-        foreach ($myhomenode->children as $c) {
-            $c->showdivider = true;
-            $c->collectionlabel = $c->shorttext;
-            $myhomenode->add_node($newnode, $c->key);
-            return;
-        }
-    } else {
-        $node = $navigation->add_node($newnode, SITEID);
-        $node->showinflatnavigation = true;
+    $myhomenode = $navigation->find($COURSE->id, global_navigation::TYPE_COURSE);
+    foreach ($myhomenode->children as $c) {
+        $c->showdivider = true;
+        $c->collectionlabel = $c->shorttext;
+        $myhomenode->add_node($newnode, $c->key);
+        return;
     }
 }
 
