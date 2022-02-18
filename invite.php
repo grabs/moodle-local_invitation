@@ -51,21 +51,19 @@ $courseurl = new \moodle_url('/course/view.php', array('id' => $courseid));
 /** @var \moodle_page $PAGE */
 $PAGE->set_url($myurl);
 $PAGE->set_context($context);
-$PAGE->set_pagelayout('admin');
+$PAGE->set_pagelayout('incourse');
 $PAGE->set_heading($course->fullname);
 $PAGE->set_title($title);
 
-if (!course_format_uses_sections($course->format)) {
-    $coursesurl = new \moodle_url('/course/index.php');
-    $coursename = empty($CFG->navshowfullcoursenames) ?
-        format_string($course->shortname, true, array('context' => $context)) :
-        format_string($course->fullname, true, array('context' => $context));
+$coursesurl = new \moodle_url('/course/index.php');
+$coursename = empty($CFG->navshowfullcoursenames) ?
+    format_string($course->shortname, true, array('context' => $context)) :
+    format_string($course->fullname, true, array('context' => $context));
 
-    $PAGE->navbar->ignore_active();
-    $PAGE->navbar->add(get_string('courses'), $coursesurl);
-    $PAGE->navbar->add(s($coursename), $courseurl);
-    $PAGE->navbar->add($title, $myurl);
-}
+$PAGE->navbar->ignore_active();
+$PAGE->navbar->add(get_string('courses'), $coursesurl);
+$PAGE->navbar->add(s($coursename), $courseurl);
+$PAGE->navbar->add($title, $myurl);
 
 /** @var \local_invitation\output\renderer $output */
 $output = $PAGE->get_renderer('local_invitation');

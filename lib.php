@@ -24,6 +24,7 @@
 use local_invitation\helper\date_time as datetime;
 use local_invitation\helper\util as util;
 use local_invitation\globals as gl;
+use local_invitation\output\navigation as nav;
 
 /**
  * Fumble with Moodle's global navigation by leveraging Moodle's *_extend_navigation() hook.
@@ -31,69 +32,23 @@ use local_invitation\globals as gl;
  * @param global_navigation $navigation
  */
 function local_invitation_extend_navigation(global_navigation $navigation) {
-    $CFG = gl::cfg();
-    $PAGE = gl::page();
     $COURSE = gl::course();
     $USER = gl::user();
-    $DB = gl::db();
 
     // Prevent some urls to invited users.
     util::prevent_actions($USER);
 
-    if ($COURSE->id == SITEID) {
-        return;
-    }
+    if ($newnode = nav::create_navigation_node()) {
+        $newnode->showdivider = true;
+        $newnode->collectionlabel = $newnode->text;
 
-    if (!util::is_active()) {
-        return;
-    }
-
-    $context = \context_course::instance($COURSE->id);
-    // Are we really on the course page or maybe in an activity page?
-    if ($PAGE->context->id !== $context->id) {
-        // If the course has no sections the activity page might be the course page.
-        if (course_format_uses_sections($COURSE->format)) {
+        $myhomenode = $navigation->find($COURSE->id, global_navigation::TYPE_COURSE);
+        foreach ($myhomenode->children as $c) {
+            $c->showdivider = true;
+            $c->collectionlabel = $c->shorttext;
+            $myhomenode->add_node($newnode, $c->key);
             return;
         }
-    }
-
-    if (!has_capability('local/invitation:manage', $context)) {
-        return;
-    }
-
-    if (!is_enrolled($context, null, '', true)) {
-        if (!is_viewing($context)) {
-            if (!is_siteadmin()) {
-                return;
-            }
-        }
-    }
-
-    if ($DB->get_record('local_invitation', array('courseid' => $COURSE->id))) {
-        $nodetitle = get_string('edit_invitation', 'local_invitation');
-        $pixname = 'envelope-open';
-    } else {
-        $nodetitle = get_string('invite_participants', 'local_invitation');
-        $pixname = 'envelope';
-    }
-    $newnode = navigation_node::create(
-        $nodetitle,
-        new moodle_url('/local/invitation/invite.php', array('courseid' => $COURSE->id)),
-        global_navigation::TYPE_ROOTNODE,
-        null,
-        null,
-        new pix_icon($pixname, 'invitation', 'local_invitation')
-    );
-    $newnode->showinflatnavigation;
-    $newnode->showdivider = true;
-    $newnode->collectionlabel = $nodetitle;
-
-    $myhomenode = $navigation->find($COURSE->id, global_navigation::TYPE_COURSE);
-    foreach ($myhomenode->children as $c) {
-        $c->showdivider = true;
-        $c->collectionlabel = $c->shorttext;
-        $myhomenode->add_node($newnode, $c->key);
-        return;
     }
 }
 
@@ -104,8 +59,9 @@ function local_invitation_extend_navigation(global_navigation $navigation) {
  * @param navigation_node $navigation
  */
 function local_invitation_extend_navigation_course(navigation_node $navigation) {
-    global $PAGE, $COURSE;
-
+    if ($newnode = nav::create_navigation_node()) {
+        $navigation->add_node($newnode);
+    }
 }
 
 /**

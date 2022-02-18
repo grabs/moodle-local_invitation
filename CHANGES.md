@@ -4,6 +4,10 @@ moodle-local_invitation
 Changes
 -------
 
+### v3.9.5
+
+* 2022-02-18 - show invitation link also in the course admin navigation for better usability in classic based themes
+
 ### v3.9.4
 
 * 2022-02-11 - fix issue #1 (https://github.com/grabs/moodle-local_invitation/issues/1)
