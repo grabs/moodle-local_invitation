@@ -21,8 +21,9 @@ Feature: Use an invitation as guest user
   Scenario: Use the Invitation link as guest
     When I log in as "teacher1"
     And I am on "Course 1" course homepage
+    And I click on "#topofscroll nav.moremenu li[data-region=\"morebutton\"] > a" "css_element"
     And I should see "New invitation for temporary course access"
-    And I click on "New invitation for temporary course access" "link" in the "#nav-drawer" "css_element"
+    And I click on "New invitation for temporary course access" "link" in the "#topofscroll nav.moremenu" "css_element"
     And I should see "New invitation for temporary course access"
     And I should see "Maximum users"
     And I set the field "Maximum users" to "5"
