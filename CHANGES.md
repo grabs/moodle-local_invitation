@@ -4,6 +4,10 @@ moodle-local_invitation
 Changes
 -------
 
+### v4.0
+
+* 2022-04-29 - compatibility to Moodle 4.0
+
 ### v3.9.5
 
 * 2022-02-18 - show invitation link also in the course admin navigation for better usability in classic based themes
