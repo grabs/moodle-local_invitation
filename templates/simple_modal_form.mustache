@@ -55,29 +55,10 @@
 </div>
 {{#js}}
 require(['theme_boost/loader']);
-require(['jquery'], function($) {
-    var mymodal = $('#modalform-{{uniqid}}');
-    var mymodalbuttonid = '#modalbutton-{{uniqid}}';
-
+require(['local_invitation/modal_helper'], function(modalhelper) {
+    modalhelper.init('#modalform-{{uniqid}}');
     {{#autoopen}}
-        mymodal.modal('show');
+    modalhelper.show('#modalform-{{uniqid}}');
     {{/autoopen}}
-
-    // With this we move the modal to the end of body to show it over all.
-    mymodal.on('show.bs.modal', function(element) {
-        mymodal.appendTo('body');
-    });
-
-    // This is needed to make atto work on modal.
-    mymodal.on('shown.bs.modal', function(element) {
-        $(document).off('focusin.modal');
-    });
-
-    mymodal.on('hidden.bs.modal', function(event) {
-        setTimeout(function() {
-            mymodal.appendTo(mymodalbuttonid);
-        }, 20);
-    });
-
 });
 {{/js}}

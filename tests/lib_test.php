@@ -38,6 +38,7 @@ use local_invitation\helper\date_time as datetime;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class lib_test extends \advanced_testcase {
+    /** @var array */
     private $examples;
 
     /**
@@ -59,6 +60,7 @@ class lib_test extends \advanced_testcase {
     /**
      * Test rendering an invitation note
      *
+     * @covers \local_invitation\helper\util
      * @return void
      */
     public function test_render_invitation_note() {
@@ -80,6 +82,7 @@ class lib_test extends \advanced_testcase {
     /**
      * Test to create and delete invitations.
      *
+     * @covers \local_invitation\helper\util
      * @return void
      */
     public function test_create_invitation() {
@@ -115,6 +118,7 @@ class lib_test extends \advanced_testcase {
     /**
      * Test to use an invitation as user.
      *
+     * @covers \local_invitation\helper\util
      * @return void
      */
     public function test_use_invitation() {
@@ -164,6 +168,7 @@ class lib_test extends \advanced_testcase {
     /**
      * Test whether a given invitation is deleted when the related course is deleted.
      *
+     * @covers \local_invitation\helper\util
      * @return void
      */
     public function test_course_deletion() {

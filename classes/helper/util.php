@@ -14,13 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * @package    local_invitation
- * @author     Andreas Grabs <info@grabs-edv.de>
- * @copyright  2020 Andreas Grabs EDV-Beratung
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace local_invitation\helper;
 use local_invitation\helper\date_time as datetime;
 use local_invitation\globals as gl;
@@ -28,11 +21,14 @@ use local_invitation\globals as gl;
 /**
  * Utility class.
  *
+ * @package    local_invitation
+ * @author     Andreas Grabs <info@grabs-edv.de>
  * @copyright  2020 Andreas Grabs EDV-Beratung
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class util {
 
+    /** Default patterns for prevent actions. */
     const PREVENTPATTERNS = array(
         'enrolment'         => '#enrol/index.php#',
         'courselist'        => '#course(/index.php.*|/)$#',
@@ -306,7 +302,7 @@ class util {
     /**
      * Get a not used username.
      *
-     * @param $prefix
+     * @param string $prefix
      * @return string the new username
      */
     private static function get_free_username($prefix) {

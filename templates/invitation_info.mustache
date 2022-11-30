@@ -147,79 +147,13 @@
     </div>
 </div>
 {{#js}}
-require(['jquery'], function($) {
-    $('#copy-{{uniqid}}xxxx').on('click', function() {
-        $('#inviteurl-{{uniqid}}').popover(
-            {
-                title: "{{#str}} clipboard, local_invitation {{/str}}",
-                content: "{{#str}} link_copied, local_invitation {{/str}}",
-                placement: "top"
-            }
-        );
-        $('#inviteurl-{{uniqid}}').popover('show');
-        setTimeout(function(){
-            $('#inviteurl-{{uniqid}}').popover('hide');
-        }, 3000);
-    });
-
-    $('#copy-{{uniqid}}').on('click', function() {
-        /* Get the text field */
-        copy_to_clipboard($('#inviteurl-{{uniqid}}'));
-
-        // Show a popover.
-        $('#inviteurl-{{uniqid}}').popover(
-            {
-                title: "{{#str}} clipboard, local_invitation {{/str}}",
-                content: "{{#str}} link_copied, local_invitation {{/str}}",
-                placement: "top"
-            }
-        );
-        $('#inviteurl-{{uniqid}}').popover('show');
-        setTimeout(function(){
-            $('#inviteurl-{{uniqid}}').popover('hide');
-        }, 3000);
-
-    });
-
-    var copy_to_clipboard = function(elem) {
-        // Create hidden text element, if it doesn't already exist.
-        var targetId = "hiddenCopyText-{{uniqid}}";
-        var origSelectionStart, origSelectionEnd;
-
-        // must use a temporary form element for the selection and copy
-        target = document.getElementById(targetId);
-        if (!target) {
-            var target = document.createElement("textarea");
-            target.style.position = "absolute";
-            target.style.left = "-9999px";
-            target.style.top = "0";
-            target.id = targetId;
-            document.body.appendChild(target);
-        }
-        target.textContent = elem.text();
-
-        // select the content
-        var currentFocus = document.activeElement;
-        target.focus();
-        target.setSelectionRange(0, target.value.length);
-
-        // copy the selection
-        var succeed;
-        try {
-            succeed = document.execCommand("copy");
-        } catch(e) {
-            succeed = false;
-        }
-        // restore original focus
-        if (currentFocus && typeof currentFocus.focus === "function") {
-            currentFocus.focus();
-        }
-
-        // clear temporary content
-        target.textContent = "";
-
-        return succeed;
-    };
+require(['local_invitation/clipboard'], function(clipboard) {
+    clipboard.init(
+        'copy-{{uniqid}}',
+        'inviteurl-{{uniqid}}',
+        '{{uniqid}}',
+        '{{#str}} clipboard, local_invitation {{/str}}',
+        '{{#str}} link_copied, local_invitation {{/str}}'
+    );
 });
-
 {{/js}}

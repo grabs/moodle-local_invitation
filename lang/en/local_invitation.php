@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Language definition.
  * @package    local_invitation
  * @author     Andreas Grabs <info@grabs-edv.de>
  * @copyright  2020 Andreas Grabs EDV-Beratung

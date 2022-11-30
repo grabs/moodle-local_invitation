@@ -14,13 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * @package    local_invitation
- * @author     Andreas Grabs <info@grabs-edv.de>
- * @copyright  2020 Andreas Grabs EDV-Beratung
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace local_invitation\form;
 use local_invitation\helper\date_time as datetime;
 use local_invitation\globals as gl;
@@ -28,11 +21,14 @@ use local_invitation\globals as gl;
 /**
  * The update form.
  *
+ * @package    local_invitation
+ * @author     Andreas Grabs <info@grabs-edv.de>
  * @copyright  2020 Andreas Grabs EDV-Beratung
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class update extends base {
 
+    /** @var \stdClass */
     private $myconfig;
 
     /**
@@ -95,7 +91,6 @@ class update extends base {
     /**
      * The mform validation method
      *
-     * @global \moodle_database $DB
      * @param \stdClass $data
      * @param array $files
      * @return array

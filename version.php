@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Version definition.
  * @package    local_invitation
  * @author     Andreas Grabs <info@grabs-edv.de>
  * @copyright  2020 Andreas Grabs EDV-Beratung
@@ -23,8 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version   = 2022042901;     // The current module version (Date: YYYYMMDDXX).
-$plugin->release   = 'v4.0 (Build: 2022042900)';
+$plugin->version   = 2022043000;     // The current module version (Date: YYYYMMDDXX).
+$plugin->release   = 'v4.1 (Build: 2022113000)';
 $plugin->requires  = 2022041200;     // Requires this Moodle version.
 $plugin->maturity  = MATURITY_STABLE;
 $plugin->component = 'local_invitation';

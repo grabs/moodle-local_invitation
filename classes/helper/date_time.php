@@ -14,32 +14,30 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * @package    local_invitation
- * @author     Andreas Grabs <info@grabs-edv.de>
- * @copyright  2020 Andreas Grabs EDV-Beratung
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace local_invitation\helper;
 use local_invitation\globals as gl;
 
 /**
  * A helper class for time calculations.
  *
+ * @package    local_invitation
+ * @author     Andreas Grabs <info@grabs-edv.de>
  * @copyright  2020 Andreas Grabs EDV-Beratung
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class date_time {
+    /** A minute in seconds */
     const MINUTE = 60; // For easier usage of a 1 minute time range.
+    /** An hour in seconds */
     const HOUR = self::MINUTE * 60; // For easier usage of a 1 hour time range.
+    /** A day in seconds */
     const DAY = self::HOUR * 24; // For easier usage of a 24 hour time range.
 
     /**
      * Get the month from the given timestamp
      *
-     * @param integer $timestamp
-     * @return integer A number between 1 and 12
+     * @param int $timestamp
+     * @return int A number between 1 and 12
      */
     public static function get_month(int $timestamp) : int {
         $month = date('n', $timestamp);
@@ -49,8 +47,8 @@ class date_time {
     /**
      * Get the Year from the given timestamp
      *
-     * @param integer $timestamp
-     * @return integer
+     * @param int $timestamp
+     * @return int
      */
     public static function get_year(int $timestamp) : int {
         $year = date('Y', $timestamp);
@@ -71,10 +69,11 @@ class date_time {
         return strtotime($year.'-'.$month.'-'.$day.' '.$hour.':'.$minute);
     }
 
-    /*
+    /**
      * Get the first day of the week the timestamp is in
+     *
      * @param int $timestamp
-     * @return int The timestamp of the first day
+     * @return int
      */
     public static function get_first_day_of_week(int $timestamp) : int {
         // First check the weekday of timestart.
@@ -88,10 +87,11 @@ class date_time {
         return $startday;
     }
 
-    /*
-     * Get the last day of the week the timestamp is in
+    /**
+     * Get the last day of the week the timestamp is in.
+     *
      * @param int $timestamp
-     * @return int The timestamp of the first day
+     * @return int
      */
     public static function get_last_day_of_week(int $timestamp) : int {
         // First check the weekday of timestart.
@@ -107,6 +107,7 @@ class date_time {
 
     /**
      * Get the first day of a month the timestamp is in.
+     *
      * @param int $stamp
      * @return int
      */
@@ -120,6 +121,8 @@ class date_time {
     }
 
     /**
+     * Get the first day of the month before the given timestamp.
+     *
      * @param int $timestamp
      * @return integer
      */
@@ -130,6 +133,8 @@ class date_time {
     }
 
     /**
+     * Get the first day of the next month after the given timestamp.
+     *
      * @param int $timestamp
      * @return integer
      */
@@ -141,6 +146,7 @@ class date_time {
 
     /**
      * Get the last day of a month the timestamp is in.
+     *
      * @param int $stamp
      * @return int
      */
@@ -161,6 +167,8 @@ class date_time {
     }
 
     /**
+     * Get the last day of the month before the given timestamp.
+     *
      * @param int $timestamp
      * @return integer
      */
@@ -171,6 +179,8 @@ class date_time {
     }
 
     /**
+     * Get the last day of the next month after the given timestamp.
+     *
      * @param int $timestamp
      * @return integer
      */
@@ -194,6 +204,7 @@ class date_time {
     /**
      * Get the numeric interpretation of a weekday in the range of 1 to 7.
      * The value 1 means "Monday" and 7 means "Sunday"
+     *
      * @param int $timestamp
      * @return int
      */
@@ -203,6 +214,7 @@ class date_time {
 
     /**
      * Get the timestamp of a day starting at 0:00 a.m.
+     *
      * @param int $timestamp
      * @return int
      */
@@ -212,12 +224,13 @@ class date_time {
 
     /**
      * Check if a given timestamp is at a weekend.
+     *
      * @param int $timestamp
      * @return bool
      */
     public static function day_is_weekend(int $timestamp) : bool {
         $weekday = date('N', $timestamp); // The function date('N'...) gets 1 to 7 for each day of week.
-        if ($weekday == '6' OR $weekday == '7') {
+        if ($weekday == '6' || $weekday == '7') {
             return true;
         }
         return false;

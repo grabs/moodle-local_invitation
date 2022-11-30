@@ -23,6 +23,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+/**
+ * Upgrade the plugin depending on the old and the new version.
+ *
+ * @param int $oldversion
+ * @return bool
+ */
 function xmldb_local_invitation_upgrade($oldversion) {
     global $DB;
 

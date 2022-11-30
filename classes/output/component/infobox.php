@@ -14,13 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * @package    local_invitation
- * @author     Andreas Grabs <info@grabs-edv.de>
- * @copyright  2020 Andreas Grabs EDV-Beratung
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace local_invitation\output\component;
 use local_invitation\helper\date_time as datetime;
 use local_invitation\globals as gl;
@@ -28,6 +21,8 @@ use local_invitation\globals as gl;
 /**
  * Renderable and templatable component for the infobox.
  *
+ * @package    local_invitation
+ * @author     Andreas Grabs <info@grabs-edv.de>
  * @copyright  2020 Andreas Grabs EDV-Beratung
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
