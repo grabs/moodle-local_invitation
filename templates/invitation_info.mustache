@@ -42,7 +42,7 @@
         "editformbox": "<div>edit form content</div>",
         "deleteformbox": "<div>delete form content</div>",
         "qrcodebutton": "<div>content with qr-code</div>",
-        "url": "https://....",
+        "url": "https://example.com",
         "timestartwarning": 0,
         "timestart": "2022-02-08 10:00",
         "timeendwarning": 1,
@@ -50,9 +50,9 @@
         "usedslots": 12,
         "freeslots": 3,
         "slots": 15,
-        "qrcodeimg": "svg string",
+        "qrcodeimg": "https://qrcodeimage.example.com/dummy.png",
         "note": "created",
-        "courseurl": "https://..."
+        "courseurl": "https://example.com"
     }
 }}
 
@@ -79,7 +79,7 @@
                         <table class="table table-sm">
                             <tbody>
                                 <tr>
-                                    <th width="190px">
+                                    <th>
                                         {{#str}} available_from, local_invitation {{/str}}
                                     </th>
                                     <td {{#timestartwarning}}class="text-danger"{{/timestartwarning}}>
