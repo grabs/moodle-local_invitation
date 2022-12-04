@@ -64,7 +64,7 @@ $string['nameinfo_help'] = 'With this text you can define a short explanation ho
 $string['note'] = 'Note:';
 $string['pluginname'] = 'Invitation';
 $string['preventactions'] = 'Prevent actions';
-$string['preventactions_help'] = '<strong>Note:</strong> You can define urls or parts of urls wich invited users should not be able to call.<br>
+$string['preventactions_help'] = '<strong>Note:</strong> You can define urls or parts of urls which invited users should not be able to call.<br>
 If the invited user calls such url he is redirected to its course or to the Moodle frontpage.<br>
 You should not include the Dashboard or the frontpage in this list!';
 $string['qrcode'] = 'QR Code';
@@ -73,7 +73,7 @@ $string['showqrcode'] = 'Show QR Code';
 $string['single_name_field'] = 'Single name field';
 $string['single_name_field_help'] = 'When "single name field" is checked, the user only needs to specify a single name and not a first and last name. In addition a suffix is appended to the name.';
 $string['systemrole'] = 'System role';
-$string['systemrole_help'] = 'If a system role is defined the invited user will be assinged to this. This can be used to restrict the invited user on system level.';
+$string['systemrole_help'] = 'If a system role is defined the invited user will be assigned to this. This can be used to restrict the invited user on system level.';
 $string['timeend'] = 'Time end';
 $string['timestart'] = 'Time start';
 $string['usedslots'] = 'Used:';
