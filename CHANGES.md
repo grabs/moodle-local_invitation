@@ -3,6 +3,8 @@ moodle-local_invitation
 
 Changes
 -------
+### v3.9.6
+* 2022-12-04 - fix lang string typos
 
 ### v3.9.5
 
