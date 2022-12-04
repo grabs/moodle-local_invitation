@@ -4,6 +4,9 @@ moodle-local_invitation
 Changes
 -------
 
+### v4.1.1
+* 2022-12-04 - fix lang string typos
+
 ### v4.1
 * 2022-11-30 - compatibility check for Moodle 4.0 and 4.1
 * 2022-11-30 - put js into amd modules

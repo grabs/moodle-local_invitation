@@ -24,8 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version   = 2022043000;     // The current module version (Date: YYYYMMDDXX).
-$plugin->release   = 'v4.1 (Build: 2022113000)';
+$plugin->version   = 2022043001;     // The current module version (Date: YYYYMMDDXX).
+$plugin->release   = 'v4.1.1 (Build: 2022120400)';
 $plugin->requires  = 2022041200;     // Requires this Moodle version.
 $plugin->maturity  = MATURITY_STABLE;
 $plugin->component = 'local_invitation';
