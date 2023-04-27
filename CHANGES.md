@@ -4,6 +4,9 @@ moodle-local_invitation
 Changes
 -------
 
+### v4.2
+* 2023-04-27 - modify github actions
+
 ### v4.1.1
 * 2022-12-04 - fix lang string typos
 
