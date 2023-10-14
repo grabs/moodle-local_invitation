@@ -29,6 +29,8 @@ use local_invitation\globals as gl;
 class invitation_info extends base {
     /** @var edit_form_box */
     private $editwidget;
+    /** @var delete_form_box */
+    private $deletewidget;
 
     /**
      * Constructor

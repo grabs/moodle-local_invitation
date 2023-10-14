@@ -38,19 +38,6 @@ function local_invitation_extend_navigation(global_navigation $navigation) {
 
     // Prevent some urls to invited users.
     util::prevent_actions($USER);
-
-    if ($newnode = nav::create_navigation_node()) {
-        $newnode->showdivider = true;
-        $newnode->collectionlabel = $newnode->text;
-
-        $myhomenode = $navigation->find($COURSE->id, global_navigation::TYPE_COURSE);
-        foreach ($myhomenode->children as $c) {
-            $c->showdivider = true;
-            $c->collectionlabel = $c->shorttext;
-            $myhomenode->add_node($newnode, $c->key);
-            return;
-        }
-    }
 }
 
 
