@@ -38,6 +38,8 @@ $course = get_course($courseid);
 $autoopen = false;
 
 $DB = gl::db();
+$PAGE = gl::page();
+$FULLME = gl::fullme();
 
 require_login($courseid);
 require_capability('local/invitation:manage', $context);
@@ -49,7 +51,6 @@ $myurl->remove_all_params();
 $myurl->param('courseid', $courseid);
 $courseurl = new \moodle_url('/course/view.php', array('id' => $courseid));
 
-/** @var \moodle_page $PAGE */
 $PAGE->set_url($myurl);
 $PAGE->set_context($context);
 $PAGE->set_pagelayout('incourse');

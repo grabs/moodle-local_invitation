@@ -31,6 +31,9 @@ use local_invitation\globals as gl;
 // @codingStandardsIgnoreLine
 require_once(dirname(__FILE__) . '/../../config.php');
 
+$PAGE = gl::page();
+$FULLME = gl::fullme();
+
 util::require_active();
 
 // Because it is an enrolment we use the system context.
@@ -41,7 +44,6 @@ $title = get_string('error_invalid_invitation', 'local_invitation');
 $myurl = new \moodle_url($FULLME);
 $myurl->remove_all_params();
 
-/** @var \moodle_page $PAGE */
 $PAGE->set_url($myurl);
 $PAGE->set_context($context);
 $PAGE->set_pagelayout('frontpage');

@@ -38,6 +38,7 @@ $secret = required_param('id', PARAM_TEXT);
 
 $DB = gl::db();
 $USER = gl::user();
+$FULLME = gl::fullme();
 
 // Because it is an enrolment we use the system context.
 $context = context_system::instance();
@@ -56,7 +57,6 @@ $myurl->remove_all_params();
 $myurl->param('courseid', $courseid);
 $myurl->param('id', $secret);
 
-/** @var \moodle_page $PAGE */
 $PAGE->set_url($myurl);
 $PAGE->set_context($context);
 $PAGE->set_pagelayout('frontpage');

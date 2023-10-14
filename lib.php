@@ -33,7 +33,6 @@ use local_invitation\output\navigation as nav;
  * @param global_navigation $navigation
  */
 function local_invitation_extend_navigation(global_navigation $navigation) {
-    $COURSE = gl::course();
     $USER = gl::user();
 
     // Prevent some urls to invited users.
