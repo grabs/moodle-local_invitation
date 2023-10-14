@@ -22,23 +22,22 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use local_invitation\helper\date_time as datetime;
-use local_invitation\helper\util as util;
 use local_invitation\globals as gl;
+use local_invitation\helper\util;
 
-require_once(dirname(__FILE__) . '/../../config.php');
+require_once(__DIR__ . '/../../config.php');
 
 util::require_active();
 
 $courseid = required_param('courseid', PARAM_INT);
-$id = optional_param('id', 0, PARAM_INT);
+$id       = optional_param('id', 0, PARAM_INT);
 
-$context = context_course::instance($courseid);
-$course = get_course($courseid);
+$context  = context_course::instance($courseid);
+$course   = get_course($courseid);
 $autoopen = false;
 
-$DB = gl::db();
-$PAGE = gl::page();
+$DB     = gl::db();
+$PAGE   = gl::page();
 $FULLME = gl::fullme();
 
 require_login($courseid);
@@ -49,7 +48,7 @@ $title = get_string('invite_participants', 'local_invitation');
 $myurl = new \moodle_url($FULLME);
 $myurl->remove_all_params();
 $myurl->param('courseid', $courseid);
-$courseurl = new \moodle_url('/course/view.php', array('id' => $courseid));
+$courseurl = new \moodle_url('/course/view.php', ['id' => $courseid]);
 
 $PAGE->set_url($myurl);
 $PAGE->set_context($context);
@@ -59,32 +58,30 @@ $PAGE->set_title($title);
 
 $coursesurl = new \moodle_url('/course/index.php');
 $coursename = empty($CFG->navshowfullcoursenames) ?
-    format_string($course->shortname, true, array('context' => $context)) :
-    format_string($course->fullname, true, array('context' => $context));
+    format_string($course->shortname, true, ['context' => $context]) :
+    format_string($course->fullname, true, ['context' => $context]);
 
 $PAGE->navbar->ignore_active();
-$PAGE->navbar->add(get_string('courses'), $coursesurl);
-$PAGE->navbar->add(s($coursename), $courseurl);
-$PAGE->navbar->add($title, $myurl);
+$PAGE->navbar->add($coursename, $courseurl);
+$PAGE->navbar->add($title);
 
 /** @var \local_invitation\output\renderer $output */
 $output = $PAGE->get_renderer('local_invitation');
 
 $invitationinfo = '';
-$invitationnote = $output->render_from_template('local_invitation/invitation_note', array('note' => util::get_invitation_note()));
+$invitationnote = $output->render_from_template('local_invitation/invitation_note', ['note' => util::get_invitation_note()]);
 // Common custom data for both forms (invite and update).
-$customdata = array(
+$customdata = [
     'courseid' => $courseid,
-);
+];
 
 // If there is an invitation we create an info box and a edit form.
-if ($invitation = $DB->get_record('local_invitation', array('courseid' => $courseid))) {
-
+if ($invitation = $DB->get_record('local_invitation', ['courseid' => $courseid])) {
     // The editopen is used on errors to open the modalbox with the editform after an error.
-    $editopen = false;
+    $editopen         = false;
     $customdata['id'] = $invitation->id; // Append the id to the custom data.
 
-    $editform = new \local_invitation\form\update(null, $customdata);
+    $editform   = new \local_invitation\form\update(null, $customdata);
     $deleteform = new \local_invitation\form\delete(null, $customdata);
 
     $editform->set_data($invitation);
@@ -129,7 +126,7 @@ if ($invitation = $DB->get_record('local_invitation', array('courseid' => $cours
         }
     }
 
-    $invitewidget = new \local_invitation\output\component\invitation_info($invitation, $editform, $deleteform, $editopen);
+    $invitewidget   = new \local_invitation\output\component\invitation_info($invitation, $editform, $deleteform, $editopen);
     $invitationinfo = $output->render($invitewidget);
 
     $formwidget = '';
@@ -139,7 +136,7 @@ if ($invitation = $DB->get_record('local_invitation', array('courseid' => $cours
     $inviteform = new \local_invitation\form\invite(null, $customdata);
 
     if ($inviteform->is_cancelled()) {
-        redirect(new \moodle_url('/course/view.php', array('id' => $courseid)));
+        redirect(new \moodle_url('/course/view.php', ['id' => $courseid]));
     }
 
     // We need to check whether or not the form is submitted to be aware of some errors in the form.

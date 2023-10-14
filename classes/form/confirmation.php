@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace local_invitation\form;
-use local_invitation\helper\date_time as datetime;
-use local_invitation\helper\util;
+
 use local_invitation\globals as gl;
+use local_invitation\helper\util;
 
 /**
  * Confirmation form.
@@ -28,7 +28,6 @@ use local_invitation\globals as gl;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class confirmation extends base {
-
     /** @var \stdClass */
     private $myconfig;
 
@@ -38,16 +37,16 @@ class confirmation extends base {
      * @return void
      */
     public function definition() {
-        $CFG = gl::cfg();
+        $CFG    = gl::cfg();
         $OUTPUT = gl::output();
-        $mycfg = gl::mycfg();
+        $mycfg  = gl::mycfg();
 
         $this->myconfig = get_config('local_invitation');
         if (empty($this->myconfig->userrole)) {
             throw new \moodle_exception('error_userrole_not_defined', 'local_invitation');
         }
 
-        $mform = $this->_form;
+        $mform      = $this->_form;
         $customdata = (object) $this->_customdata;
         if (empty($customdata->invitation)) {
             throw new \moodle_exception('Invalid or missing invitation');
@@ -87,7 +86,7 @@ class confirmation extends base {
         }
 
         if ($consent = util::get_consent()) {
-            $consent = format_text($consent);
+            $consent      = format_text($consent);
             $consenttitle = get_string('consent_title', 'local_invitation');
             $mform->addElement('checkbox', 'consent', $consenttitle, $consent);
             $mform->addRule('consent', get_string('required'), 'required', null, 'client');
@@ -95,11 +94,10 @@ class confirmation extends base {
 
         $submitlabel = get_string('join', 'local_invitation');
         $this->add_action_buttons(true, $submitlabel);
-
     }
 
     /**
-     * Get the form data
+     * Get the form data.
      *
      * @return array|object
      */

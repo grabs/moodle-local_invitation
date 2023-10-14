@@ -21,11 +21,10 @@
  * @copyright  2020 Andreas Grabs EDV-Beratung
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version   = 2023042700;     // The current module version (Date: YYYYMMDDXX).
-$plugin->release   = 'v4.2 (Build: 2023042700)';
+$plugin->version   = 2023101400;     // The current module version (Date: YYYYMMDDXX).
+$plugin->release   = 'v4.3 (Build: 2023101400)';
 $plugin->requires  = 2022041200;     // Requires this Moodle version.
 $plugin->maturity  = MATURITY_STABLE;
 $plugin->component = 'local_invitation';

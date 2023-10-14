@@ -21,17 +21,15 @@
  * @copyright  2020 Andreas Grabs EDV-Beratung
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die;
 
-defined('MOODLE_INTERNAL') || die();
-
-$observers = array(
-
-    array(
+$observers = [
+    [
         'eventname' => '\core\event\course_deleted',
-        'callback' => '\local_invitation\observer::course_deleted',
-    ),
-    array(
+        'callback'  => '\local_invitation\observer::course_deleted',
+    ],
+    [
         'eventname'   => '\core\event\user_loggedout',
         'callback'    => '\local_invitation\observer::user_loggedout',
-    ),
-);
+    ],
+];

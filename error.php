@@ -22,16 +22,15 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use local_invitation\helper\date_time as datetime;
-use local_invitation\helper\util as util;
 use local_invitation\globals as gl;
+use local_invitation\helper\util;
 
 // We do not have a login check in this file because the login is actually done here.
 // So we have to ignore the codingstyle for the config.php inclusion which normally requires a login check.
 // @codingStandardsIgnoreLine
-require_once(dirname(__FILE__) . '/../../config.php');
+require_once(__DIR__ . '/../../config.php');
 
-$PAGE = gl::page();
+$PAGE   = gl::page();
 $FULLME = gl::fullme();
 
 util::require_active();

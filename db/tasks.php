@@ -21,18 +21,17 @@
  * @copyright  2020 Andreas Grabs EDV-Beratung
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die;
 
-defined('MOODLE_INTERNAL') || die();
-
-$tasks = array(
+$tasks = [
     // Unenrol and delete expired users.
-    array(
+    [
         'classname' => 'local_invitation\task\remove_old_invitations',
-        'blocking' => 0,
-        'minute' => '0',
-        'hour' => '*',
-        'day' => '*',
-        'month' => '*',
+        'blocking'  => 0,
+        'minute'    => '0',
+        'hour'      => '*',
+        'day'       => '*',
+        'month'     => '*',
         'dayofweek' => '*',
-    ),
-);
+    ],
+];

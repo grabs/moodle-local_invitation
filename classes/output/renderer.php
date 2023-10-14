@@ -15,8 +15,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace local_invitation\output;
-use local_invitation\helper\date_time as datetime;
-use local_invitation\globals as gl;
 
 /**
  * A dummy renderer class just to make it overridable by themes.
@@ -27,5 +25,4 @@ use local_invitation\globals as gl;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class renderer extends \plugin_renderer_base {
-
 }

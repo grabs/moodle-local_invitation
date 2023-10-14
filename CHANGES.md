@@ -4,6 +4,10 @@ moodle-local_invitation
 Changes
 -------
 
+### v4.3
+* 2023-10-14 - Add icon for quick access to the usermenu on top of the page.
+* 2023-10-14 - Apply new coding style rules for arrays.
+
 ### v4.2
 * 2023-04-27 - modify github actions
 

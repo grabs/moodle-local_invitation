@@ -15,8 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace local_invitation\form;
-use local_invitation\helper\date_time as datetime;
+
 use local_invitation\globals as gl;
+use local_invitation\helper\date_time as datetime;
 
 /**
  * The update form.
@@ -27,7 +28,6 @@ use local_invitation\globals as gl;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class update extends base {
-
     /** @var \stdClass */
     private $myconfig;
 
@@ -63,12 +63,12 @@ class update extends base {
         $mform->setType('userrole', PARAM_INT);
         $mform->setConstant('userrole', $this->myconfig->userrole);
 
-        $options = self::get_maxusers_options($this->myconfig->maxusers);;
+        $options = self::get_maxusers_options($this->myconfig->maxusers);
         $mform->addElement('select', 'maxusers', get_string('max_users', 'local_invitation'), $options);
 
-        $timestart = datetime::floor_to_day(time());
-        $timeend = $timestart + datetime::DAY - datetime::MINUTE; // This means 23:59.
-        $timeoptions = array('startyear' => datetime::get_year(time()), 'stopyear' => datetime::get_year(time()) + 1);
+        $timestart   = datetime::floor_to_day(time());
+        $timeend     = $timestart + datetime::DAY - datetime::MINUTE; // This means 23:59.
+        $timeoptions = ['startyear' => datetime::get_year(time()), 'stopyear' => datetime::get_year(time()) + 1];
         $mform->addElement(
             'date_time_selector',
             'timestart',
@@ -85,14 +85,13 @@ class update extends base {
         $mform->setDefault('timeend', $timeend);
 
         $this->add_action_buttons();
-
     }
 
     /**
-     * The mform validation method
+     * The mform validation method.
      *
-     * @param \stdClass $data
-     * @param array $files
+     * @param  \stdClass $data
+     * @param  array     $files
      * @return array
      */
     public function validation($data, $files) {
@@ -106,12 +105,13 @@ class update extends base {
 
         if ($data->timeend < $data->timestart) {
             $errors['timestart'] = get_string('error_timeend_can_not_be_before_timestart', 'local_invitation');
-            $errors['timeend'] = get_string('error_timeend_can_not_be_before_timestart', 'local_invitation');
+            $errors['timeend']   = get_string('error_timeend_can_not_be_before_timestart', 'local_invitation');
         }
 
         if ($data->timeend < $today) {
             $errors['timeend'] = get_string('error_timeend_can_not_be_in_past', 'local_invitation');
         }
+
         return $errors;
     }
 }

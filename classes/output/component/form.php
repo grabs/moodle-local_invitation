@@ -15,8 +15,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace local_invitation\output\component;
-use local_invitation\helper\date_time as datetime;
-use local_invitation\globals as gl;
 
 /**
  * Renderable and templatable component for a moodle form.
@@ -31,30 +29,31 @@ class form extends base {
     private $mform;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \local_invitation\form\base $mform
-     * @param string $title
-     * @param boolean $autoopen
-     * @param string|null $backurl
+     * @param string                      $title
+     * @param bool                        $autoopen
+     * @param string|null                 $backurl
      */
     public function __construct($mform, $title, $autoopen = false, $backurl = null) {
         parent::__construct();
 
-        $this->mform = $mform;
-        $this->data['title'] = $title;
+        $this->mform            = $mform;
+        $this->data['title']    = $title;
         $this->data['autoopen'] = $autoopen;
-        $this->data['backurl'] = $backurl;
+        $this->data['backurl']  = $backurl;
     }
 
     /**
-     * Data for usage in mustache
+     * Data for usage in mustache.
      *
-     * @param \renderer_base $output
+     * @param  \renderer_base $output
      * @return array
      */
     public function export_for_template(\renderer_base $output) {
         $this->data['formcontent'] = $this->mform->export_for_template($output);
+
         return $this->data;
     }
 }

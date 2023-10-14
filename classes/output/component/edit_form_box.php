@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace local_invitation\output\component;
-use local_invitation\helper\date_time as datetime;
+
 use local_invitation\globals as gl;
 
 /**
@@ -31,29 +31,30 @@ class edit_form_box extends base {
     private $editform;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \local_invitation\form\base $editform
-     * @param bool $autoopen
+     * @param bool                        $autoopen
      */
     public function __construct($editform, $autoopen) {
         $DB = gl::db();
         parent::__construct();
 
-        $this->editform = $editform;
-        $this->data['autoopen'] = $autoopen;
+        $this->editform          = $editform;
+        $this->data['autoopen']  = $autoopen;
         $this->data['linktitle'] = '<i class="fa fa-cog fa-lg"></i>';
-        $this->data['title'] = get_string('edit_invitation', 'local_invitation');
+        $this->data['title']     = get_string('edit_invitation', 'local_invitation');
     }
 
     /**
-     * Data for usage in mustache
+     * Data for usage in mustache.
      *
-     * @param \renderer_base $output
+     * @param  \renderer_base $output
      * @return array
      */
     public function export_for_template(\renderer_base $output) {
         $this->data['formcontent'] = $this->editform->export_for_template($output);
+
         return $this->data;
     }
 }

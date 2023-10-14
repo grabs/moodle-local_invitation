@@ -22,22 +22,21 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use local_invitation\helper\date_time as datetime;
-use local_invitation\helper\util as util;
 use local_invitation\globals as gl;
+use local_invitation\helper\util;
 
 // We do not have a login check in this file because the login is actually done here.
 // So we have to ignore the codingstyle for the config.php inclusion which normally requires a login check.
 // @codingStandardsIgnoreLine
-require_once(dirname(__FILE__) . '/../../config.php');
+require_once(__DIR__ . '/../../config.php');
 
 util::require_active();
 
 $courseid = required_param('courseid', PARAM_INT);
-$secret = required_param('id', PARAM_TEXT);
+$secret   = required_param('id', PARAM_TEXT);
 
-$DB = gl::db();
-$USER = gl::user();
+$DB     = gl::db();
+$USER   = gl::user();
 $FULLME = gl::fullme();
 
 // Because it is an enrolment we use the system context.
@@ -66,7 +65,7 @@ $PAGE->set_title($title);
 /** @var \local_invitation\output\renderer $output */
 $output = $PAGE->get_renderer('local_invitation');
 
-$customdata = array('invitation' => $invitation);
+$customdata  = ['invitation' => $invitation];
 $confirmform = new \local_invitation\form\confirmation(null, $customdata);
 
 if ($confirmform->is_cancelled()) {
@@ -81,10 +80,10 @@ if ($confirmdata = $confirmform->get_data()) {
     }
 
     $welcomenote = new \local_invitation\output\component\welcome_note($newuser);
-    $urlparams = array(
-        'id' => $invitation->courseid,
+    $urlparams   = [
+        'id'   => $invitation->courseid,
         'lang' => $USER->lang,
-    );
+    ];
     redirect(
         new \moodle_url('/course/view.php', $urlparams),
         $output->render($welcomenote),
@@ -96,8 +95,8 @@ if ($confirmdata = $confirmform->get_data()) {
 $formwidget = new \local_invitation\output\component\form($confirmform, $title, true);
 $infooutput = '';
 if (isloggedin()) {
-    $title = get_string('note', 'local_invitation');
-    $infomsg = get_string('info_already_loggedin', 'local_invitation');
+    $title      = get_string('note', 'local_invitation');
+    $infomsg    = get_string('info_already_loggedin', 'local_invitation');
     $infowidget = new \local_invitation\output\component\infobox($title, $infomsg);
     $infooutput = $output->render($infowidget);
 }

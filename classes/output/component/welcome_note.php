@@ -15,8 +15,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace local_invitation\output\component;
-use local_invitation\helper\date_time as datetime;
-use local_invitation\globals as gl;
 
 /**
  * Renderable and templatable component for the welcome note.
@@ -27,9 +25,8 @@ use local_invitation\globals as gl;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class welcome_note extends base {
-
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \stdClass $user
      */
@@ -39,9 +36,9 @@ class welcome_note extends base {
     }
 
     /**
-     * Data for usage in mustache
+     * Data for usage in mustache.
      *
-     * @param \renderer_base $output
+     * @param  \renderer_base $output
      * @return array
      */
     public function export_for_template(\renderer_base $output) {

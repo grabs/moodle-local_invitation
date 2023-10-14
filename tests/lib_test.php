@@ -23,10 +23,12 @@
  * @copyright   2018 onwards Grabs EDV {@link https://www.grabs-edv.de}
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace local_invitation;
+
 use local_invitation\globals as gl;
-use local_invitation\helper\util as util;
 use local_invitation\helper\date_time as datetime;
+use local_invitation\helper\util;
 
 /**
  * Unit tests for general invitation features.
@@ -42,7 +44,7 @@ class lib_test extends \advanced_testcase {
     private $examples;
 
     /**
-     * Set up the test
+     * Set up the test.
      *
      * @return void
      */
@@ -52,13 +54,12 @@ class lib_test extends \advanced_testcase {
         $this->resetAfterTest();
         $this->setAdminUser();
 
-        $examples = file_get_contents($CFG->dirroot.'/local/invitation/tests/fixtures/sampeldata.json');
+        $examples       = file_get_contents($CFG->dirroot . '/local/invitation/tests/fixtures/sampeldata.json');
         $this->examples = json_decode($examples);
-
     }
 
     /**
-     * Test rendering an invitation note
+     * Test rendering an invitation note.
      *
      * @covers \local_invitation\helper\util
      * @return void
@@ -72,9 +73,9 @@ class lib_test extends \advanced_testcase {
 
         $invitationnote = $output->render_from_template(
             'local_invitation/invitation_note',
-            array(
-                'note' => util::get_invitation_note()
-            )
+            [
+                'note' => util::get_invitation_note(),
+            ]
         );
         $this->assertIsString($invitationnote);
     }
@@ -86,20 +87,20 @@ class lib_test extends \advanced_testcase {
      * @return void
      */
     public function test_create_invitation() {
-        $CFG = gl::cfg();
-        $DB = gl::db();
+        $CFG   = gl::cfg();
+        $DB    = gl::db();
         $mycfg = gl::mycfg();
 
         // Generate for each example a new course + invitation.
         foreach ($this->examples as $example) {
             $course = $this->getDataGenerator()->create_course();
             // Simulate the form data for creating a new invitation.
-            $invitedata = new \stdClass();
-            $invitedata->courseid = $course->id;
-            $invitedata->maxusers = $example->maxusers;
-            $invitedata->userrole = $mycfg->userrole;
+            $invitedata            = new \stdClass();
+            $invitedata->courseid  = $course->id;
+            $invitedata->maxusers  = $example->maxusers;
+            $invitedata->userrole  = $mycfg->userrole;
             $invitedata->timestart = time() + datetime::DAY;
-            $invitedata->timeend = time() + 2 * datetime::DAY;
+            $invitedata->timeend   = time() + 2 * datetime::DAY;
 
             $result = util::create_invitation($invitedata);
             $this->assertTrue((bool) $result);
@@ -122,24 +123,24 @@ class lib_test extends \advanced_testcase {
      * @return void
      */
     public function test_use_invitation() {
-        $PAGE = gl::page();
-        $DB = gl::db();
+        $PAGE  = gl::page();
+        $DB    = gl::db();
         $mycfg = gl::mycfg();
 
         $course = $this->getDataGenerator()->create_course();
         // Simulate the form data for creating a new invitation.
-        $invitedata = new \stdClass();
-        $invitedata->courseid = $course->id;
-        $invitedata->maxusers = $this->examples[0]->maxusers;
-        $invitedata->userrole = $mycfg->userrole;
+        $invitedata            = new \stdClass();
+        $invitedata->courseid  = $course->id;
+        $invitedata->maxusers  = $this->examples[0]->maxusers;
+        $invitedata->userrole  = $mycfg->userrole;
         $invitedata->timestart = time();
-        $invitedata->timeend = time() + 2 * datetime::DAY;
+        $invitedata->timeend   = time() + 2 * datetime::DAY;
 
         $result = util::create_invitation($invitedata);
         $this->assertTrue((bool) $result);
 
         // Lets get the the invitation-secret by using the courseid.
-        $invitationsecret = $DB->get_field('local_invitation', 'secret', array('courseid' => $course->id));
+        $invitationsecret = $DB->get_field('local_invitation', 'secret', ['courseid' => $course->id]);
         $this->assertIsString($invitationsecret);
 
         // Now we get the invitation by using the secret.
@@ -148,10 +149,10 @@ class lib_test extends \advanced_testcase {
         $this->assertIsObject($invitation);
 
         // Simulate the confirm form.
-        $confirmdata = new \stdClass();
+        $confirmdata            = new \stdClass();
         $confirmdata->firstname = 'George';
-        $confirmdata->lastname = 'Meyer';
-        $confirmdata->consent = true;
+        $confirmdata->lastname  = 'Meyer';
+        $confirmdata->consent   = true;
         // Create and login the new user.
         $newuser = util::create_login_and_enrol($invitation, $confirmdata);
         $this->assertIsObject($newuser);
@@ -172,30 +173,30 @@ class lib_test extends \advanced_testcase {
      * @return void
      */
     public function test_course_deletion() {
-        $DB = gl::db();
+        $DB    = gl::db();
         $mycfg = gl::mycfg();
 
         $course = $this->getDataGenerator()->create_course();
         // Simulate the form data for creating a new invitation.
-        $invitedata = new \stdClass();
-        $invitedata->courseid = $course->id;
-        $invitedata->maxusers = $this->examples[0]->maxusers;
-        $invitedata->userrole = $mycfg->userrole;
+        $invitedata            = new \stdClass();
+        $invitedata->courseid  = $course->id;
+        $invitedata->maxusers  = $this->examples[0]->maxusers;
+        $invitedata->userrole  = $mycfg->userrole;
         $invitedata->timestart = time();
-        $invitedata->timeend = time() + 2 * datetime::DAY;
+        $invitedata->timeend   = time() + 2 * datetime::DAY;
 
         $result = util::create_invitation($invitedata);
         $this->assertTrue((bool) $result);
 
         // Get the invitation by courseid.
-        $invitation = $DB->get_record('local_invitation', array('courseid' => $course->id));
+        $invitation = $DB->get_record('local_invitation', ['courseid' => $course->id]);
         $this->assertIsObject($invitation);
 
         // Now we delete the course. The invitation should be deleted too.
         $result = delete_course($course->id, false);
         $this->assertTrue($result);
         // We should not find the invitation in the database.
-        $check = $DB->get_record('local_invitation', array('id' => $invitation->id));
+        $check = $DB->get_record('local_invitation', ['id' => $invitation->id]);
         $this->assertFalse($check);
     }
 }

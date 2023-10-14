@@ -28,9 +28,8 @@
 
 require_once(__DIR__ . '/../../../../lib/behat/behat_base.php');
 
-use Behat\Gherkin\Node\TableNode as TableNode,
-    Behat\Mink\Exception\ExpectationException as ExpectationException,
-    Behat\Mink\Exception\DriverException as DriverException;
+use Behat\Mink\Exception\DriverException;
+use Behat\Mink\Exception\ExpectationException;
 
 /**
  * Steps definitions related to mod_feedback.
@@ -43,8 +42,8 @@ class behat_local_invitation extends behat_base {
      * Press tab key on a specific element.
      *
      * @When /^I visit "(?P<element_string>(?:[^"]|\\")*)" "(?P<selector_string>[^"]*)" after logout$/
-     * @param string $element Element we look for
-     * @param string $selectortype The type of what we look for
+     * @param  string               $element      Element we look for
+     * @param  string               $selectortype The type of what we look for
      * @throws DriverException
      * @throws ExpectationException
      */
@@ -54,8 +53,7 @@ class behat_local_invitation extends behat_base {
         }
         // Gets the node based on the requested selector type and locator.
         $node = $this->get_selected_node($selectortype, $element);
-        $url = $node->getAttribute('href');
+        $url  = $node->getAttribute('href');
         $this->getSession()->visit($url);
     }
-
 }

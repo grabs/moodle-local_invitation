@@ -15,8 +15,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace local_invitation\output\component;
-use local_invitation\helper\date_time as datetime;
-use local_invitation\globals as gl;
 
 /**
  * Renderable and templatable component for the infobox.
@@ -27,9 +25,8 @@ use local_invitation\globals as gl;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class infobox extends base {
-
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $title
      * @param string $text
@@ -37,13 +34,13 @@ class infobox extends base {
     public function __construct($title, $text) {
         parent::__construct();
         $this->data['title'] = $title;
-        $this->data['text'] = $text;
+        $this->data['text']  = $text;
     }
 
     /**
-     * Data for usage in mustache
+     * Data for usage in mustache.
      *
-     * @param \renderer_base $output
+     * @param  \renderer_base $output
      * @return array
      */
     public function export_for_template(\renderer_base $output) {

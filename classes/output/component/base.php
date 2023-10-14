@@ -15,8 +15,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace local_invitation\output\component;
-use local_invitation\helper\date_time as datetime;
-use local_invitation\globals as gl;
 
 /**
  * Renderable and templatable component base class.
@@ -27,7 +25,6 @@ use local_invitation\globals as gl;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class base implements \renderable, \templatable {
-
     /** @var array */
     protected $data;
 
@@ -35,13 +32,13 @@ abstract class base implements \renderable, \templatable {
      * Constructor.
      */
     public function __construct() {
-        $this->data = array();
+        $this->data = [];
     }
 
     /**
      * Export the data for usage in mustache.
      *
-     * @param \renderer_base $output
+     * @param  \renderer_base $output
      * @return array
      */
     abstract public function export_for_template(\renderer_base $output);

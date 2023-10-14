@@ -22,10 +22,20 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use local_invitation\helper\date_time as datetime;
-use local_invitation\helper\util as util;
 use local_invitation\globals as gl;
+use local_invitation\helper\util;
 use local_invitation\output\navigation as nav;
+
+/**
+ * Allow plugins to provide some content to be rendered in the navbar.
+ * The plugin must define a PLUGIN_render_navbar_output function that returns
+ * the HTML they wish to add to the navbar.
+ *
+ * @return string HTML for the navbar
+ */
+function local_invitation_render_navbar_output() {
+    return nav::create_nav_action();
+}
 
 /**
  * Fumble with Moodle's global navigation by leveraging Moodle's *_extend_navigation() hook.
@@ -38,7 +48,6 @@ function local_invitation_extend_navigation(global_navigation $navigation) {
     // Prevent some urls to invited users.
     util::prevent_actions($USER);
 }
-
 
 /**
  * Fumble with Moodle's global navigation by leveraging Moodle's *_extend_navigation_course() hook.
@@ -56,10 +65,10 @@ function local_invitation_extend_navigation_course(navigation_node $navigation) 
  */
 function local_invitation_get_fontawesome_icon_map() {
     // We build a map of some icons we use in the navigation.
-    $iconmap = array(
-        'local_invitation:envelope' => 'fa-envelope-o',
+    $iconmap = [
+        'local_invitation:envelope'      => 'fa-envelope-o',
         'local_invitation:envelope-open' => 'fa-envelope-open-o',
-    );
+    ];
 
     return $iconmap;
 }

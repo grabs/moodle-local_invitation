@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace local_invitation;
-use local_invitation\helper\date_time as datetime;
-use local_invitation\helper\util;
+
 use local_invitation\globals as gl;
+use local_invitation\helper\util;
 
 /**
  * Observer class.
@@ -28,11 +28,10 @@ use local_invitation\globals as gl;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class observer {
-
     /**
      * A course has been deleted.
      *
-     * @param \core\event\course_deleted $event The event.
+     * @param  \core\event\course_deleted $event the event
      * @return void
      */
     public static function course_deleted(\core\event\course_deleted $event) {
@@ -40,7 +39,7 @@ class observer {
 
         $courseid = $event->courseid;
 
-        $DB->delete_records('local_invitation', array('courseid' => $courseid));
+        $DB->delete_records('local_invitation', ['courseid' => $courseid]);
     }
 
     /**

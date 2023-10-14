@@ -21,12 +21,13 @@
  * @author     Andreas Grabs <info@grabs-edv.de>
  * @copyright  2020 Andreas Grabs EDV-Beratung
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @param mixed $oldversion
  */
 
 /**
  * Upgrade the plugin depending on the old and the new version.
  *
- * @param int $oldversion
+ * @param  int  $oldversion
  * @return bool
  */
 function xmldb_local_invitation_upgrade($oldversion) {
@@ -35,7 +36,6 @@ function xmldb_local_invitation_upgrade($oldversion) {
     $dbman = $DB->get_manager();
 
     if ($oldversion < 2021012000) {
-
         // Define index secret (not unique) to be added to local_invitation.
         $table = new xmldb_table('local_invitation');
         $index = new xmldb_index('secret', XMLDB_INDEX_NOTUNIQUE, ['secret']);
@@ -58,7 +58,6 @@ function xmldb_local_invitation_upgrade($oldversion) {
     }
 
     if ($oldversion < 2021012001) {
-
         // Define field deleted to be added to local_invitation_users.
         $table = new xmldb_table('local_invitation_users');
         $field = new xmldb_field('deleted', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'timecreated');

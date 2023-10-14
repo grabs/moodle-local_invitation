@@ -15,8 +15,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace local_invitation\form;
-use local_invitation\helper\date_time as datetime;
-use local_invitation\globals as gl;
 
 /**
  * Delete form.
@@ -27,7 +25,6 @@ use local_invitation\globals as gl;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class delete extends base {
-
     /**
      * Form definition.
      *
@@ -51,9 +48,8 @@ class delete extends base {
         $mform->setType('courseid', PARAM_INT);
         $mform->setConstant('courseid', $customdata->courseid);
 
-        $mform->addElement('html', '<div>'.get_string('delete_confirmation', 'local_invitation').'</div>');
+        $mform->addElement('html', '<div>' . get_string('delete_confirmation', 'local_invitation') . '</div>');
 
         $this->add_action_buttons(true, get_string('delete'));
-
     }
 }

@@ -15,7 +15,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace local_invitation;
-use local_invitation\helper\date_time as datetime;
 
 /**
  * Provide all globals we need.
@@ -27,62 +26,68 @@ use local_invitation\helper\date_time as datetime;
  */
 class globals {
     /**
-     * Returns the \moodle_database instance
+     * Returns the \moodle_database instance.
      *
      * @return \moodle_database
      */
     public static function db() {
         global $DB;
+
         return $DB;
     }
 
     /**
-     * Returns the \renderer_base instance
+     * Returns the \renderer_base instance.
      *
      * @return \renderer_base
      */
     public static function output() {
         global $OUTPUT;
+
         return $OUTPUT;
     }
 
     /**
-     * Returns the $SESSION instance
+     * Returns the $SESSION instance.
      *
      * @return \stdClass
      */
     public static function session() {
         global $SESSION;
+
         return $SESSION;
     }
 
     /**
-     * Returns the $USER instance
+     * Returns the $USER instance.
      *
      * @return \stdClass
      */
     public static function user() {
         global $USER;
+
         return $USER;
     }
 
     /**
-     * Returns the $PAGE instance
+     * Returns the $PAGE instance.
      *
      * @return \moodle_page
      */
     public static function page() {
         global $PAGE;
+
         return $PAGE;
     }
 
     /**
-     * Returns the $CFG instance
+     * Returns the $CFG instance.
      *
      * @return \stdClass
      */
     public static function cfg() {
         global $CFG;
+
         return $CFG;
     }
 
@@ -102,32 +107,35 @@ class globals {
     }
 
     /**
-     * Returns the $SITE instance
+     * Returns the $SITE instance.
      *
      * @return \stdClass
      */
     public static function site() {
         global $SITE;
+
         return $SITE;
     }
 
     /**
-     * Returns the $COURSE instance
+     * Returns the $COURSE instance.
      *
      * @return \stdClass
      */
     public static function course() {
         global $COURSE;
+
         return $COURSE;
     }
 
     /**
-     * Returns the $FULLME instance
+     * Returns the $FULLME instance.
      *
      * @return string
      */
     public static function fullme() {
         global $FULLME;
+
         return $FULLME;
     }
 }

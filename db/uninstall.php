@@ -15,16 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Cleaning mess after uninstalling this plugin
+ * Cleaning mess after uninstalling this plugin.
  * @package    local_invitation
  * @author     Andreas Grabs <info@grabs-edv.de>
  * @copyright  2020 Andreas Grabs EDV-Beratung
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use local_invitation\helper\date_time as datetime;
-use local_invitation\helper\util as util;
-use local_invitation\globals as gl;
+use local_invitation\helper\util;
 
 /**
  * This is called at the beginning of the uninstallation process to give the module
@@ -35,5 +33,6 @@ use local_invitation\globals as gl;
 function xmldb_local_invitation_uninstall() {
     util::set_all_users_expired();
     util::anonymize_and_delete_expired_users();
+
     return true;
 }

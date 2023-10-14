@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace local_invitation\output\component;
-use local_invitation\helper\date_time as datetime;
+
 use local_invitation\globals as gl;
 
 /**
@@ -31,7 +31,7 @@ class delete_form_box extends base {
     private $deleteform;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \local_invitation\form\base $deleteform
      */
@@ -39,20 +39,21 @@ class delete_form_box extends base {
         $DB = gl::db();
         parent::__construct();
 
-        $this->deleteform = $deleteform;
-        $this->data['autoopen'] = false;
+        $this->deleteform        = $deleteform;
+        $this->data['autoopen']  = false;
         $this->data['linktitle'] = '<i class="fa fa-trash fa-lg text-danger"></i>';
-        $this->data['title'] = get_string('delete_invitation', 'local_invitation');
+        $this->data['title']     = get_string('delete_invitation', 'local_invitation');
     }
 
     /**
-     * Data for usage in mustache
+     * Data for usage in mustache.
      *
-     * @param \renderer_base $output
+     * @param  \renderer_base $output
      * @return array
      */
     public function export_for_template(\renderer_base $output) {
         $this->data['formcontent'] = $this->deleteform->export_for_template($output);
+
         return $this->data;
     }
 }

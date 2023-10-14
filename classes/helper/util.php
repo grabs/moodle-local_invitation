@@ -15,8 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace local_invitation\helper;
-use local_invitation\helper\date_time as datetime;
+
 use local_invitation\globals as gl;
+use local_invitation\helper\date_time as datetime;
 
 /**
  * Utility class.
@@ -27,9 +28,8 @@ use local_invitation\globals as gl;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class util {
-
     /** Default patterns for prevent actions. */
-    const PREVENTPATTERNS = array(
+    public const PREVENTPATTERNS = [
         'enrolment'         => '#enrol/index.php#',
         'courselist'        => '#course(/index.php.*|/)$#',
         'calendar'          => '#calendar/#',
@@ -41,24 +41,22 @@ class util {
         'userpreferences'   => '#user/preferences.php#',
         'badges'            => '#badges/.*#',
         'messages'          => '#message/index.php#',
-    );
-
+    ];
 
     /**
      * Get all roles as choice parameters.
      * Because we need them more than once so we define it here.
      *
-     * @param int $contextlevel The contextlevel the roles have to be assignable.
+     * @param  int   $contextlevel the contextlevel the roles have to be assignable
      * @return array
      */
     public static function get_role_choices($contextlevel) {
-
-        $roles = self::get_roles_for_contextlevel($contextlevel);
-        $guestrole = get_guest_role();
+        $roles                 = self::get_roles_for_contextlevel($contextlevel);
+        $guestrole             = get_guest_role();
         $roles[$guestrole->id] = $guestrole; // Add guest role to the list.
 
         $choices = role_fix_names($roles, null, ROLENAME_ORIGINAL, true);
-        $choices = array(0 => get_string('choose')) + $choices;
+        $choices = [0 => get_string('choose')] + $choices;
 
         return $choices;
     }
@@ -67,19 +65,19 @@ class util {
      * Get all roles.
      * Because we need them more than once so we define it here.
      *
-     * @param int $contextlevel The contextlevel the roles have to be assignable.
-     * @return array The array with role records.
+     * @param  int   $contextlevel the contextlevel the roles have to be assignable
+     * @return array the array with role records
      */
     public static function get_roles_for_contextlevel($contextlevel) {
         $DB = gl::db();
 
-        $sql = "SELECT r.*
+        $sql = 'SELECT r.*
                 FROM {role} r
                     JOIN {role_context_levels} rcl
                         ON r.id = rcl.roleid
                 WHERE rcl.contextlevel = :contextlevel
-        ";
-        $params = array('contextlevel' => $contextlevel);
+        ';
+        $params = ['contextlevel' => $contextlevel];
 
         return $DB->get_records_sql($sql, $params);
     }
@@ -93,73 +91,76 @@ class util {
         $DB = gl::db();
 
         $secret = \core\uuid::generate();
-        while ($DB->count_records('local_invitation', array('secret' => $secret)) > 0) {
+        while ($DB->count_records('local_invitation', ['secret' => $secret]) > 0) {
             $secret = \core\uuid::generate();
         }
+
         return $secret;
     }
 
     /**
      * Create an invitation in the database.
      *
-     * @param \stdClass $invitedata
+     * @param  \stdClass $invitedata
      * @return bool|int
      */
     public static function create_invitation($invitedata) {
         $DB = gl::db();
 
-        $DB->delete_records('local_invitation', array('courseid' => $invitedata->courseid));
+        $DB->delete_records('local_invitation', ['courseid' => $invitedata->courseid]);
         $invitedata->timemodified = time();
-        $invitedata->secret = self::generate_secret_for_inventation();
+        $invitedata->secret       = self::generate_secret_for_inventation();
+
         return $DB->insert_record('local_invitation', $invitedata);
     }
 
     /**
-     * Update an invitation
+     * Update an invitation.
      *
-     * @param \stdClass $invitation
-     * @param \stdClass $updatedata
+     * @param  \stdClass $invitation
+     * @param  \stdClass $updatedata
      * @return bool
      */
     public static function update_invitation($invitation, $updatedata) {
         $DB = gl::db();
 
         $invitation->timestart = $updatedata->timestart;
-        $invitation->timeend = $updatedata->timeend;
-        $invitation->maxusers = $updatedata->maxusers;
+        $invitation->timeend   = $updatedata->timeend;
+        $invitation->maxusers  = $updatedata->maxusers;
+
         return $DB->update_record('local_invitation', $invitation);
     }
 
     /**
-     * Delete an invitation
+     * Delete an invitation.
      *
-     * @param int $invitationid
+     * @param  int  $invitationid
      * @return bool
      */
     public static function delete_invitation($invitationid) {
         $DB = gl::db();
 
-        return $DB->delete_records('local_invitation', array('id' => $invitationid));
+        return $DB->delete_records('local_invitation', ['id' => $invitationid]);
     }
 
     /**
      * Get an invitation using its secret.
      *
-     * @param string $secret
-     * @param int $courseid
+     * @param  string    $secret
+     * @param  int       $courseid
      * @return \stdClass
      */
     public static function get_invitation_from_secret($secret, $courseid) {
         $DB = gl::db();
 
-        $params = array();
-        $params['courseid'] = $courseid;
-        $params['secret'] = $secret;
-        $params['now1'] = time();
-        $params['now2'] = $params['now1'];
+        $params              = [];
+        $params['courseid']  = $courseid;
+        $params['secret']    = $secret;
+        $params['now1']      = time();
+        $params['now2']      = $params['now1'];
         $params['unlimited'] = 0;
 
-        $sql = "SELECT i.*
+        $sql = 'SELECT i.*
                 FROM {local_invitation} i
                     JOIN {course} c ON c.id = i.courseid
                     WHERE i.secret = :secret AND ((
@@ -172,7 +173,7 @@ class util {
                         ) OR
                         i.maxusers = :unlimited
                     )
-        ";
+        ';
         $invitation = $DB->get_record_sql($sql, $params);
 
         return $invitation;
@@ -181,12 +182,12 @@ class util {
     /**
      * Create a new temporary user, log in and enrol him.
      *
-     * @param \stdClass $invitation
-     * @param \stdClass $confirmdata
+     * @param  \stdClass      $invitation
+     * @param  \stdClass      $confirmdata
      * @return \stdClass|bool The new user record or false
      */
     public static function create_login_and_enrol($invitation, $confirmdata) {
-        $DB = gl::db();
+        $DB    = gl::db();
         $mycfg = gl::mycfg();
 
         // Wrap the SQL queries in a transaction.
@@ -228,10 +229,10 @@ class util {
         }
 
         // Log this user in our table.
-        $newuserrecord = new \stdClass();
+        $newuserrecord               = new \stdClass();
         $newuserrecord->invitationid = $invitation->id;
-        $newuserrecord->userid = $user->id;
-        $newuserrecord->timecreated = time();
+        $newuserrecord->userid       = $user->id;
+        $newuserrecord->timecreated  = time();
         $DB->insert_record('local_invitation_users', $newuserrecord);
 
         return $user;
@@ -240,31 +241,31 @@ class util {
     /**
      * Create a new user to login into the democourse.
      *
-     * @param string $firstname
-     * @param string $lastname
+     * @param  string    $firstname
+     * @param  string    $lastname
      * @return \stdClass the new created user
      */
     private static function create_login($firstname, $lastname) {
         $CFG = gl::cfg();
 
-        require_once($CFG->dirroot.'/user/lib.php');
+        require_once($CFG->dirroot . '/user/lib.php');
 
-        $user = new \stdClass();
-        $user->username = self::get_free_username('invited_');
-        $user->firstname = $firstname;
-        $user->lastname = $lastname;
-        $user->mnethostid = $CFG->mnet_localhost_id;
+        $user               = new \stdClass();
+        $user->username     = self::get_free_username('invited_');
+        $user->firstname    = $firstname;
+        $user->lastname     = $lastname;
+        $user->mnethostid   = $CFG->mnet_localhost_id;
         $user->password_raw = generate_password();
-        $user->password = hash_internal_user_password($user->password_raw, true);
-        $user->deleted = 0;
-        $user->confirmed = 1;
+        $user->password     = hash_internal_user_password($user->password_raw, true);
+        $user->deleted      = 0;
+        $user->confirmed    = 1;
         $user->timemodified = time();
-        $user->timecreated = time();
-        $user->suspended = 0;
-        $user->auth = 'manual';
-        $user->email = $user->username.'@'.self::get_email_domain();
-        $user->lang = $CFG->lang; // We use the system default language. Courses can have there own lang setting.
-        $user->id = user_create_user($user, false);
+        $user->timecreated  = time();
+        $user->suspended    = 0;
+        $user->auth         = 'manual';
+        $user->email        = $user->username . '@' . self::get_email_domain();
+        $user->lang         = $CFG->lang; // We use the system default language. Courses can have there own lang setting.
+        $user->id           = user_create_user($user, false);
 
         if (empty($user->id)) {
             throw new \moodle_exception('Could not create new user');
@@ -278,9 +279,9 @@ class util {
 
     /**
      * This enrols the given user into the course of $this->demologin->democourseid.
-     * @param int $courseid
-     * @param int $roleid
-     * @param \stdClass $user
+     * @param  int       $courseid
+     * @param  int       $roleid
+     * @param  \stdClass $user
      * @return void
      */
     private static function enrol_user($courseid, $roleid, $user) {
@@ -296,24 +297,24 @@ class util {
         }
         $enroleendtime = time() + datetime::DAY;
         $manual->enrol_user($instance, $user->id, $roleid, 0, $enroleendtime);
-
     }
 
     /**
      * Get a not used username.
      *
-     * @param string $prefix
+     * @param  string $prefix
      * @return string the new username
      */
     private static function get_free_username($prefix) {
         $DB = gl::db();
 
-        $username = $prefix.random_string();
+        $username = $prefix . random_string();
         $username = clean_param($username, PARAM_USERNAME);
-        while ($DB->record_exists('user', array('username' => $username))) {
-            $username = $prefix.random_string();
+        while ($DB->record_exists('user', ['username' => $username])) {
+            $username = $prefix . random_string();
             $username = clean_param($username, PARAM_USERNAME);
         }
+
         return $username;
     }
 
@@ -326,30 +327,32 @@ class util {
 
         $domain = random_string();
         $domain .= '.invalid'; // Use "invalid" as top level domain to prevent sending emails.
+
         return $domain;
     }
 
     /**
      * Is the plugin activated?
      *
-     * @return boolean
+     * @return bool
      */
     public static function is_active() {
         $cfg = get_config('local_invitation');
+
         return (bool) $cfg->active;
     }
 
     /**
      * Is the given user an invited user?
      *
-     * @param int $userid
-     * @return boolean
+     * @param  int  $userid
+     * @return bool
      */
     public static function is_user_invited($userid) {
         $DB = gl::db();
 
-        if ($DB->record_exists('local_invitation_users', array('userid' => $userid))) {
-            return $DB->get_record('user', array('id' => $userid));
+        if ($DB->record_exists('local_invitation_users', ['userid' => $userid])) {
+            return $DB->get_record('user', ['id' => $userid]);
         }
     }
 
@@ -359,8 +362,9 @@ class util {
      * @return string
      */
     public static function get_consent() {
-        $mycfg = gl::mycfg();
+        $mycfg   = gl::mycfg();
         $consent = $mycfg->consent;
+
         return $consent;
     }
 
@@ -383,18 +387,18 @@ class util {
     public static function set_all_users_expired() {
         $DB = gl::db();
 
-        $sql = "UPDATE {local_invitation_users} SET timecreated = 0";
+        $sql = 'UPDATE {local_invitation_users} SET timecreated = 0';
         $DB->execute($sql);
     }
 
     /**
      * Delete expired users and anonymize them before deleting.
      *
-     * @param boolean $tracing
+     * @param  bool $tracing
      * @return void
      */
     public static function anonymize_and_delete_expired_users($tracing = false) {
-        $DB = gl::db();
+        $DB    = gl::db();
         $mycfg = gl::mycfg();
 
         // First clean old records of already deleted users.
@@ -404,15 +408,15 @@ class util {
         $expiration *= datetime::DAY;
 
         // We want to remove all users after x days defined in settings. No user should be longer on this system.
-        $timeend = time() - $expiration;
-        $params = array();
+        $timeend           = time() - $expiration;
+        $params            = [];
         $params['timeend'] = $timeend;
 
-        $sql = "SELECT u.*
+        $sql = 'SELECT u.*
                 FROM {local_invitation_users} iu
                     JOIN {user} u ON u.id = iu.userid
                 WHERE iu.timecreated < :timeend AND u.deleted = 0
-        ";
+        ';
         if ($tracing) {
             mtrace('Remove expired users ...');
         }
@@ -423,7 +427,7 @@ class util {
         } else {
             foreach ($users as $user) {
                 if ($tracing) {
-                    mtrace('... delete user with id "'.$user->id.'" ...', '');
+                    mtrace('... delete user with id "' . $user->id . '" ...', '');
                 }
                 self::anonymize_and_delete_user($user);
                 if ($tracing) {
@@ -444,48 +448,45 @@ class util {
     public static function remove_deleted_users() {
         $DB = gl::db();
 
-        $sql = "SELECT u.*
+        $sql = 'SELECT u.*
                 FROM {local_invitation_users} iu
                     JOIN {user} u ON u.id = iu.userid AND u.deleted = 1
-        ";
+        ';
 
         if (!$users = $DB->get_records_sql($sql, null)) {
             return;
         }
 
         foreach ($users as $user) {
-            $DB->delete_records('local_invitation_users', array('id' => $user->id));
+            $DB->delete_records('local_invitation_users', ['id' => $user->id]);
         }
-
     }
 
     /**
      * Anonymize and delete the given user.
      *
-     * @param \stdClass $user
+     * @param  \stdClass $user
      * @return void
      */
     public static function anonymize_and_delete_user($user) {
         $DB = gl::db();
 
         $user->firstname = '-';
-        $user->lastname = '-';
+        $user->lastname  = '-';
         $DB->update_record('user', $user);
         delete_user($user);
 
-        $DB->set_field('local_invitation_users', 'deleted', 1, array('userid' => $user->id));
-
-        return;
+        $DB->set_field('local_invitation_users', 'deleted', 1, ['userid' => $user->id]);
     }
 
     /**
-     * Remove expired invitations and those which has an invalid course id
+     * Remove expired invitations and those which has an invalid course id.
      *
-     * @param bool $tracing
+     * @param  bool $tracing
      * @return void
      */
     public static function remove_old_invitations($tracing = false) {
-        $DB = gl::db();
+        $DB    = gl::db();
         $mycfg = gl::mycfg();
 
         if ($tracing) {
@@ -497,42 +498,43 @@ class util {
         $expiration *= datetime::DAY;
         $timeend = datetime::floor_to_day(time()) - $expiration;
         // Get all invitation users who are deleted not having an invitation anymore and delete them.
-        $sql = "SELECT ui.id, ui.timecreated
+        $sql = 'SELECT ui.id, ui.timecreated
                 FROM {local_invitation_users} ui
                     LEFT JOIN {local_invitation} i ON i.id = ui.invitationid
                 WHERE i.id IS NULL AND
                     ui.timecreated < :timeend AND
                     ui.deleted = 1
-        ";
-        $params = array('timeend' => $timeend);
+        ';
+        $params = ['timeend' => $timeend];
         $iusers = $DB->get_recordset_sql($sql, $params);
         foreach ($iusers as $iu) {
-            $DB->delete_records('local_invitation_users', array('id' => $iu->id));
+            $DB->delete_records('local_invitation_users', ['id' => $iu->id]);
         }
 
         // Get all old or invalid invitations and delete them.
-        $params = array('now' => time());
-        $sql = "SELECT i.*
+        $params = ['now' => time()];
+        $sql    = 'SELECT i.*
                 FROM {local_invitation} i
                     LEFT JOIN {course} c ON c.id = i.courseid
                 WHERE c.id IS NULL OR i.timeend < :now
-        ";
+        ';
 
         if (!$invitations = $DB->get_records_sql($sql, $params)) {
             if ($tracing) {
                 mtrace('... nothing to do.');
                 mtrace('done');
             }
+
             return;
         }
 
         $count = count($invitations);
         if ($tracing) {
-            mtrace('... found '.$count.' expired invitations');
+            mtrace('... found ' . $count . ' expired invitations');
         }
 
         foreach ($invitations as $invitation) {
-            $DB->delete_records('local_invitation', array('id' => $invitation->id));
+            $DB->delete_records('local_invitation', ['id' => $invitation->id]);
         }
         if ($tracing) {
             mtrace('done');
@@ -542,7 +544,7 @@ class util {
     /**
      * Check if the current url is some of the prevent actions. If so we redirect the user to the default homepage.
      *
-     * @param \stdClass $user
+     * @param  \stdClass $user
      * @return void
      */
     public static function prevent_actions($user) {
@@ -568,11 +570,11 @@ class util {
             if (empty($action)) {
                 continue;
             }
-            $pattern = '~'.$action.'~';
+            $pattern = '~' . $action . '~';
             if (preg_match($pattern, $FULLME)) {
                 $context = \context_course::instance($COURSE->id);
                 if (is_enrolled($context, $user)) {
-                    $url = new \moodle_url('/course/view.php', array('id' => $COURSE->id));
+                    $url = new \moodle_url('/course/view.php', ['id' => $COURSE->id]);
                 } else {
                     $url = new \moodle_url('/');
                 }
@@ -587,7 +589,7 @@ class util {
      * @return string
      */
     public static function get_default_prevent_actions() {
-        $preventactions = array(
+        $preventactions = [
             'enrol/index.php',
             'course(/index.php.*|/)$',
             'calendar/',
@@ -599,7 +601,8 @@ class util {
             'user/preferences.php',
             'badges/.*',
             'message/index.php',
-        );
+        ];
+
         return implode("\n", $preventactions);
     }
 
