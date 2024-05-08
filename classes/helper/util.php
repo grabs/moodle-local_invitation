@@ -189,6 +189,11 @@ class util {
     public static function create_login_and_enrol($invitation, $confirmdata) {
         $DB    = gl::db();
         $mycfg = gl::mycfg();
+        $CFG   = gl::cfg();
+
+        // We don't want to send a welcome message to the dummy user.
+        // The only way, I found, to prevent this message, is to remove the coursecontact from the $CFG variable.
+        $CFG->coursecontact = null;
 
         // Wrap the SQL queries in a transaction.
         $transaction = $DB->start_delegated_transaction();

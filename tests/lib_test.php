@@ -39,7 +39,7 @@ use local_invitation\helper\util;
  * @copyright   2018 onwards Grabs EDV {@link https://www.grabs-edv.de}
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class lib_test extends \advanced_testcase {
+final class lib_test extends \advanced_testcase {
     /** @var array */
     private $examples;
 
@@ -64,7 +64,7 @@ class lib_test extends \advanced_testcase {
      * @covers \local_invitation\helper\util
      * @return void
      */
-    public function test_render_invitation_note() {
+    public function test_render_invitation_note(): void {
         $PAGE = gl::page();
 
         /** @var \local_invitation\output\renderer $output */
@@ -86,7 +86,7 @@ class lib_test extends \advanced_testcase {
      * @covers \local_invitation\helper\util
      * @return void
      */
-    public function test_create_invitation() {
+    public function test_create_invitation(): void {
         $CFG   = gl::cfg();
         $DB    = gl::db();
         $mycfg = gl::mycfg();
@@ -122,7 +122,7 @@ class lib_test extends \advanced_testcase {
      * @covers \local_invitation\helper\util
      * @return void
      */
-    public function test_use_invitation() {
+    public function test_use_invitation(): void {
         $PAGE  = gl::page();
         $DB    = gl::db();
         $mycfg = gl::mycfg();
@@ -172,7 +172,7 @@ class lib_test extends \advanced_testcase {
      * @covers \local_invitation\helper\util
      * @return void
      */
-    public function test_course_deletion() {
+    public function test_course_deletion(): void {
         $DB    = gl::db();
         $mycfg = gl::mycfg();
 

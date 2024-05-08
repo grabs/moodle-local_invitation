@@ -4,6 +4,9 @@ moodle-local_invitation
 Changes
 -------
 
+### v4.4
+* 2024-05-08 - Set coursecontact to "null" before enrol to prevent error messages in debugging mode.
+
 ### v4.3
 * 2023-10-14 - Add icon for quick access to the usermenu on top of the page.
 * 2023-10-14 - Apply new coding style rules for arrays.
