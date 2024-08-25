@@ -16,12 +16,7 @@
 
 namespace local_invitation\external;
 
-use core_external\external_api;
-use core_external\external_description;
-use core_external\external_function_parameters;
-use core_external\external_multiple_structure;
-use core_external\external_single_structure;
-use core_external\external_value;
+require_once("$CFG->libdir/externallib.php");
 
 /**
  * Provides the local_invitation_search_groups external function.
@@ -31,17 +26,17 @@ use core_external\external_value;
  * @copyright   2024 Andreas Grabs
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class search_groups extends external_api {
+class search_groups extends \external_api {
 
     /**
      * Describes the external function parameters.
      *
-     * @return external_function_parameters
+     * @return \external_function_parameters
      */
-    public static function execute_parameters(): external_function_parameters {
-        return new external_function_parameters([
-            'courseid' => new external_value(PARAM_INT, 'The course id where the group is searched in', VALUE_REQUIRED),
-            'query' => new external_value(PARAM_RAW, 'The search query', VALUE_REQUIRED),
+    public static function execute_parameters(): \external_function_parameters {
+        return new \external_function_parameters([
+            'courseid' => new \external_value(PARAM_INT, 'The course id where the group is searched in', VALUE_REQUIRED),
+            'query' => new \external_value(PARAM_RAW, 'The search query', VALUE_REQUIRED),
         ]);
     }
 
@@ -55,7 +50,7 @@ class search_groups extends external_api {
     public static function execute(int $courseid, string $query): array {
         global $DB;
 
-        $params = external_api::validate_parameters(self::execute_parameters(), [
+        $params = \external_api::validate_parameters(self::execute_parameters(), [
             'courseid' => $courseid,
             'query' => $query,
         ]);
@@ -126,16 +121,16 @@ class search_groups extends external_api {
     /**
      * Describes the external function result value.
      *
-     * @return external_description
+     * @return \external_description
      */
-    public static function execute_returns(): external_description {
+    public static function execute_returns(): \external_description {
 
-        return new external_single_structure([
-            'list' => new external_multiple_structure(
-                new external_single_structure([
-                    'id' => new external_value(PARAM_RAW, 'ID of the group'),
-                    'name' => new external_value(PARAM_RAW, 'The name of the group'),
-                    'new' => new external_value(PARAM_BOOL, 'The group is new'),
+        return new \external_single_structure([
+            'list' => new \external_multiple_structure(
+                new \external_single_structure([
+                    'id' => new \external_value(PARAM_RAW, 'ID of the group'),
+                    'name' => new \external_value(PARAM_RAW, 'The name of the group'),
+                    'new' => new \external_value(PARAM_BOOL, 'The group is new'),
                 ])
             ),
         ]);
