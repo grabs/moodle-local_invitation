@@ -84,7 +84,41 @@ class update extends base {
         );
         $mform->setDefault('timeend', $timeend);
 
+        $this->add_usegroup_element($mform, $customdata->courseid);
+
         $this->add_action_buttons();
+    }
+
+    /**
+     * Load in existing data as form defaults.
+     *
+     * @param stdClass|array $defaultvalues
+     */
+    public function set_data($defaultvalues) {
+        if (!empty($defaultvalues->groupid)) {
+            if ($group = groups_get_group($defaultvalues->groupid)) {
+                $defaultvalues->groupid = $group->name;
+                $defaultvalues->usegroup = true;
+            } else {
+                $defaultvalues->groupid = null;
+            }
+        } else {
+            $defaultvalues->groupid = null;
+        }
+        parent::set_data($defaultvalues);
+    }
+
+    /**
+     * Return submitted data if properly submitted or returns NULL if validation fails or
+     * if there is no submitted data.
+     *
+     * @return \stdClass|null
+     */
+    public function get_data() {
+        $data = parent::get_data();
+
+        $data = $this->prepare_usegroup_data($data);
+        return $data;
     }
 
     /**
@@ -111,6 +145,9 @@ class update extends base {
         if ($data->timeend < $today) {
             $errors['timeend'] = get_string('error_timeend_can_not_be_in_past', 'local_invitation');
         }
+
+        // Check the usegroup option.
+        $errors = $this->validate_usegroup($data, $errors);
 
         return $errors;
     }

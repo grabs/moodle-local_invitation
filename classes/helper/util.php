@@ -107,28 +107,79 @@ class util {
     public static function create_invitation($invitedata) {
         $DB = gl::db();
 
+        // We start a transaction because there is some stuff we need to do that might fail.
+        $transaction = $DB->start_delegated_transaction();
+
+        // Do we use a group in our new invitation?
+        $invitedata->groupid = static::get_groupid_from_formdata($invitedata);
+
         $DB->delete_records('local_invitation', ['courseid' => $invitedata->courseid]);
         $invitedata->timemodified = time();
         $invitedata->secret       = self::generate_secret_for_inventation();
 
-        return $DB->insert_record('local_invitation', $invitedata);
+        $return = $DB->insert_record('local_invitation', $invitedata);
+        $transaction->allow_commit();
+        return $return;
     }
 
     /**
      * Update an invitation.
      *
      * @param  \stdClass $invitation
-     * @param  \stdClass $updatedata
+     * @param  \stdClass $invitedata
      * @return bool
      */
-    public static function update_invitation($invitation, $updatedata) {
+    public static function update_invitation($invitation, $invitedata) {
         $DB = gl::db();
 
-        $invitation->timestart = $updatedata->timestart;
-        $invitation->timeend   = $updatedata->timeend;
-        $invitation->maxusers  = $updatedata->maxusers;
+        // Do we use a group in our new invitation?
+        $invitation->groupid = static::get_groupid_from_formdata($invitedata);
+
+        $invitation->timestart = $invitedata->timestart;
+        $invitation->timeend   = $invitedata->timeend;
+        $invitation->maxusers  = $invitedata->maxusers;
 
         return $DB->update_record('local_invitation', $invitation);
+    }
+
+    /**
+     * Get groupid from formdata.
+     * If the group must be created it will be created.
+     *
+     * @param  \stdClass $invitedata
+     * @return int
+     */
+    public static function get_groupid_from_formdata($invitedata) {
+        $CFG = gl::cfg();
+        require_once($CFG->dirroot . '/group/lib.php');
+
+        // Do we use a group in our invitation?
+        if (!empty($invitedata->usegroup)) {
+            // The groupid must not be empty. It must be -1 or a valid groupid.
+            if (empty($invitedata->groupid)) {
+                throw new \moodle_exception('error_invitation_usegroup_no_group', 'local_invitation');
+            }
+            if ($invitedata->groupid == -1) {
+                if (empty($invitedata->groupname)) {
+                    throw new \moodle_exception('error_invitation_usegroup_no_groupname', 'local_invitation');
+                }
+                // Check whether the new groupname already exists.
+                if ($groupid = groups_get_group_by_name($invitedata->courseid, $invitedata->groupname)) {
+                    $invitedata->groupid = $groupid;
+                } else {
+                    $groupdata = new \stdClass();
+                    $groupdata->courseid = $invitedata->courseid;
+                    $groupdata->name = $invitedata->groupname;
+                    $groupdata->description = get_string('group_created_by_invitation', 'local_invitation');
+                    $groupdata->descriptionformat = FORMAT_HTML;
+                    $groupdata->enrolmentkey = '';
+                    $invitedata->groupid = groups_create_group($groupdata);
+                }
+            }
+        } else {
+            $invitedata->groupid = 0;
+        }
+        return $invitedata->groupid;
     }
 
     /**
@@ -200,7 +251,7 @@ class util {
 
         try {
             $newuser = self::create_login($confirmdata->firstname, $confirmdata->lastname);
-            self::enrol_user($invitation->courseid, $invitation->userrole, $newuser);
+            self::enrol_user($invitation, $newuser);
         } catch (\moodle_exception $e) {
             return false;
         }
@@ -284,24 +335,37 @@ class util {
 
     /**
      * This enrols the given user into the course of $this->demologin->democourseid.
-     * @param  int       $courseid
-     * @param  int       $roleid
+     * @param  \stdClass $invitation
      * @param  \stdClass $user
      * @return void
      */
-    private static function enrol_user($courseid, $roleid, $user) {
+    private static function enrol_user($invitation, $user) {
+        $CFG = gl::cfg();
+        $DB = gl::db();
+        require_once($CFG->dirroot . '/group/lib.php');
+
         $manual = enrol_get_plugin('manual');
 
-        $coursecontext = \context_course::instance($courseid);
-        if ($instances = enrol_get_instances($courseid, false)) {
+        $coursecontext = \context_course::instance($invitation->courseid);
+        if ($instances = enrol_get_instances($invitation->courseid, false)) {
             foreach ($instances as $instance) {
                 if ($instance->enrol === 'manual') {
                     break;
                 }
             }
         }
+
+        $transaction = $DB->start_delegated_transaction();
         $enroleendtime = time() + datetime::DAY;
-        $manual->enrol_user($instance, $user->id, $roleid, 0, $enroleendtime);
+        $manual->enrol_user($instance, $user->id, $invitation->userrole, 0, $enroleendtime);
+
+        // Add user to group.
+        if (!empty($invitation->groupid)) {
+            if (static::group_exists_in_course($invitation->groupid, $invitation->courseid)) {
+                groups_add_member($invitation->groupid, $user->id);
+            }
+        }
+        $transaction->allow_commit();
     }
 
     /**
@@ -644,4 +708,18 @@ class util {
 
         return $invitationnote1 . ' ' . $invitationnote2;
     }
+
+    /**
+     * Determines if a group with a given groupid exists in the given course.
+     *
+     * @param int $groupid The groupid to check for
+     * @param int $courseid The courseid to check for
+     * @return bool True if the group exists, false otherwise or if an error
+     * occurred.
+     */
+    public static function group_exists_in_course($groupid, $courseid) {
+        $DB = gl::db();
+        return $DB->record_exists('groups', ['id' => $groupid, 'courseid' => $courseid]);
+    }
+
 }

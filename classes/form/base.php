@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace local_invitation\form;
+use local_invitation\helper\util;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -29,6 +30,75 @@ require_once($CFG->libdir . '/formslib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class base extends \moodleform implements \renderable, \templatable {
+
+    /**
+     * Adds a usegroup element to the form.
+     *
+     * Adds a checkbox to the form to switch between using the group
+     * or not. If the checkbox is checked, an autocomplete element
+     * is added to select the group.
+     *
+     * @param \MoodleQuickForm $mform The form to add the element to.
+     * @param int $courseid The id of the course the group belongs to.
+     */
+    protected function add_usegroup_element(\MoodleQuickForm $mform, int $courseid) {
+        $mform->addElement('checkbox', 'usegroup', get_string('usegroup', 'local_invitation'));
+        $attributes = [
+            'ajax' => 'local_invitation/form_group_selector',
+            'multiple' => false,
+            'courseid' => $courseid,
+            'noselectionstring' => get_string('no_group_defined', 'local_invitation'),
+        ];
+        $mform->addElement('autocomplete', 'groupid', get_string('group'), [], $attributes);
+        $mform->setType('groupid', PARAM_TEXT);
+        $mform->hideIf('groupid', 'usegroup');
+    }
+
+    /**
+     * Validate usegroup
+     *
+     * @param \stdClass $data
+     * @param array $errors
+     * @return array
+     */
+    protected function validate_usegroup(\stdClass $data, array $errors) {
+        if (!empty($data->usegroup)) {
+            if (empty($data->groupid)) {
+                $errors['usegroup'] = get_string('no_group_defined', 'local_invitation');
+            } else {
+                // If we got a numeric groupid, check that it exists in the course.
+                if (is_number($data->groupid)) {
+                    if (!util::group_exists_in_course($data->groupid, $data->courseid)) {
+                        $errors['groupid'] = get_string('group_not_found', 'local_invitation');
+                    }
+                }
+            }
+        }
+
+        return $errors;
+    }
+
+    /**
+     * Prepare usegroup data
+     *
+     * @param \stdClass $data
+     * @return \stdClass
+     */
+    protected function prepare_usegroup_data(\stdClass $data) {
+        if (!empty($data)) {
+            if (!empty($data->usegroup)) {
+                if (!is_number($data->groupid)) {
+                    $data->groupname = preg_replace('#^NEW_#', '', $data->groupid);
+                    $data->groupid = -1; // Minus 1 means "create the group from the given groupname".
+                }
+            } else {
+                $data->groupid = 0;
+            }
+        }
+
+        return $data;
+    }
+
     /**
      * Get the form output as html.
      *

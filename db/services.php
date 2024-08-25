@@ -15,16 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version definition.
+ * External functions and service definitions.
+ *
  * @package    local_invitation
- * @author     Andreas Grabs <info@grabs-edv.de>
- * @copyright  2020 Andreas Grabs EDV-Beratung
+ * @category   webservice
+ * @copyright  2024 Andreas Grabs
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version   = 2024082400;     // The current module version (Date: YYYYMMDDXX).
-$plugin->release   = 'v4.4 (Build: 2024050800)';
-$plugin->requires  = 2022041200;     // Requires this Moodle version.
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->component = 'local_invitation';
+$functions = [
+    'local_invitation_search_groups' => [
+        'classname'     => '\local_invitation\external\search_groups',
+        'description'   => 'Return list of groups matching the given criteria in their name.',
+        'type'          => 'read',
+        'capabilities'  => 'moodle/course:managegroups',
+        'ajax'          => true,
+        'loginrequired' => true,
+    ],
+];
