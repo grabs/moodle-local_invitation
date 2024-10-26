@@ -105,6 +105,11 @@ jobs:
         if: ${{ always() }}
         run: moodle-plugin-ci phpdoc
 
+      - name: Run phpunit
+        continue-on-error: true # This step will show errors but will not fail
+        if: ${{ always() }}
+        run: moodle-plugin-ci phpunit
+
       - name: Run behat
         if: ${{ always() }}
         run: moodle-plugin-ci behat --profile chrome
