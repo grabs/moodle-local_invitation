@@ -15,6 +15,10 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 namespace local_invitation\external;
+use local_invitation\helper\util;
+
+
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->libdir/externallib.php");
 
@@ -57,16 +61,11 @@ class search_groups extends \external_api {
         $query = clean_param($params['query'], PARAM_TEXT);
         // We have to trim the query because a group must not have a leading or trailing space.
         $query = trim($query);
-        if (empty($query)) {
-            return [
-                'list' => [],
-            ];
-        }
 
         // Validate context.
         $context = \context_course::instance($courseid);
         self::validate_context($context);
-        require_capability('moodle/course:managegroups', $context);
+        util::require_can_use_invitation($context);
 
         // We want to know whether the user is typing the exact name of a group or not.
         // If the user has typed the exact name, we do not need to add an element for creating a new group.
@@ -82,7 +81,7 @@ class search_groups extends \external_api {
         ];
         $exactmatch = $DB->get_record_select('groups', $selectsql, $sqlparams);
         // If the query does not match exactly, we need to add an element for creating a new group.
-        if (!$exactmatch) {
+        if (!$exactmatch && !empty($query)) {
             $newelement = (object)[
                 'id' => "NEW_$query",
                 'name' => $query,

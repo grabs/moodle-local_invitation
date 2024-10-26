@@ -722,4 +722,61 @@ class util {
         return $DB->record_exists('groups', ['id' => $groupid, 'courseid' => $courseid]);
     }
 
+    /**
+     * Checks if the current user can use the invitation plugin in the given context.
+     *
+     * @param \context $context The context to check.
+     * @return bool True if the user can use the invitation plugin, false otherwise.
+     *
+     * @throws \moodle_exception If the user cannot use the invitation plugin.
+     */
+    public static function can_use_invitation(\context $context): bool {
+        if ($context->contextlevel !== CONTEXT_COURSE) {
+            return false;
+        }
+        $courseid = $context->instanceid; // The instance id is the course id.
+
+        // Don't use the invitation on the frontpage.
+        if ($courseid == SITEID) {
+            return false;
+        }
+
+        // Is the invitation plugin active?
+        if (!static::is_active()) {
+            return false;
+        }
+
+        // Check the capability.
+        if (!has_capability('local/invitation:manage', $context)) {
+            return false;
+        }
+
+        if (is_enrolled($context, null, '', true)) {
+            return true;
+        }
+
+        if (is_viewing($context)) {
+            return true;
+        }
+
+        if (is_siteadmin()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks if the current user can use the invitation plugin in the given context.
+     *
+     * @param \context $context The context to check.
+     * @return bool True if the user can use the invitation plugin, false otherwise.
+     *
+     * @throws \moodle_exception If the user cannot use the invitation plugin.
+     */
+    public static function require_can_use_invitation(\context $context): void {
+        if (!static::can_use_invitation($context)) {
+            throw new \moodle_exception('invitation_is_not_allowed', 'local_invitation');
+        }
+    }
 }

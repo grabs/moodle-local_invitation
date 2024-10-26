@@ -51,6 +51,8 @@ final class lib_test extends \advanced_testcase {
     protected function setUp(): void {
         $CFG = gl::cfg();
 
+        parent::setUp();
+
         $this->resetAfterTest();
         $this->setAdminUser();
 
@@ -81,12 +83,12 @@ final class lib_test extends \advanced_testcase {
     }
 
     /**
-     * Test to create and delete invitations.
+     * Test to create and delete invitations without using a group.
      *
      * @covers \local_invitation\helper\util
      * @return void
      */
-    public function test_create_invitation(): void {
+    public function test_create_invitation_without_group(): void {
         $CFG   = gl::cfg();
         $DB    = gl::db();
         $mycfg = gl::mycfg();
@@ -94,16 +96,118 @@ final class lib_test extends \advanced_testcase {
         // Generate for each example a new course + invitation.
         foreach ($this->examples as $example) {
             $course = $this->getDataGenerator()->create_course();
-            // Simulate the form data for creating a new invitation.
-            $invitedata            = new \stdClass();
-            $invitedata->courseid  = $course->id;
-            $invitedata->maxusers  = $example->maxusers;
-            $invitedata->userrole  = $mycfg->userrole;
-            $invitedata->timestart = time() + datetime::DAY;
-            $invitedata->timeend   = time() + 2 * datetime::DAY;
 
-            $result = util::create_invitation($invitedata);
+            // Simulate the form data for creating a new invitation.
+            $result = $this->create_invitation(
+                $course->id,
+                $example->maxusers,
+                $mycfg->userrole,
+                '',
+                0
+            );
+
             $this->assertTrue((bool) $result);
+
+            // Show that the groupid is "0" in the new invitation record.
+            $invitation = $DB->get_record('local_invitation', ['courseid' => $course->id, 'groupid' => 0]);
+            $this->assertNotEmpty($invitation);
+        }
+        // Compare the count of created invitations with the number of examples.
+        $invitations = $DB->get_records('local_invitation');
+        $this->assertEquals(count($this->examples), count($invitations));
+
+        // Delete the invitations.
+        foreach ($invitations as $invitation) {
+            $result = util::delete_invitation($invitation->id);
+            $this->assertTrue($result);
+        }
+    }
+
+    /**
+     * Test to create and delete invitations and using a new group.
+     *
+     * @covers \local_invitation\helper\util
+     * @return void
+     */
+    public function test_create_invitation_with_new_group(): void {
+        $CFG   = gl::cfg();
+        $DB    = gl::db();
+        $mycfg = gl::mycfg();
+
+        $testgroupname = 'testgroup';
+
+        // Generate for each example a new course + invitation.
+        foreach ($this->examples as $example) {
+            $course = $this->getDataGenerator()->create_course();
+
+            // Show that there is no testgroup before the creation.
+            $countgroups = $DB->count_records('groups', ['courseid' => $course->id, 'name' => $testgroupname]);
+            $this->assertEquals(0, $countgroups);
+
+            // Simulate the form data for creating a new invitation.
+            $result = $this->create_invitation(
+                $course->id,
+                $example->maxusers,
+                $mycfg->userrole,
+                $testgroupname,
+                -1
+            );
+
+            $this->assertTrue((bool) $result);
+
+            // Show that now there is the testgroup after the creation.
+            $testgroup = $DB->get_record('groups', ['courseid' => $course->id, 'name' => $testgroupname]);
+            $this->assertNotEmpty($testgroup);
+
+            // Show that the groupid is in the new invitation record.
+            $invitation = $DB->get_record('local_invitation', ['courseid' => $course->id, 'groupid' => $testgroup->id]);
+            $this->assertNotEmpty($invitation);
+        }
+        // Compare the count of created invitations with the number of examples.
+        $invitations = $DB->get_records('local_invitation');
+        $this->assertEquals(count($this->examples), count($invitations));
+
+        // Delete the invitations.
+        foreach ($invitations as $invitation) {
+            $result = util::delete_invitation($invitation->id);
+            $this->assertTrue($result);
+        }
+    }
+
+    /**
+     * Test to create and delete invitations and using an existing group.
+     *
+     * @covers \local_invitation\helper\util
+     * @return void
+     */
+    public function test_create_invitation_with_existing_group(): void {
+        $CFG   = gl::cfg();
+        $DB    = gl::db();
+        $mycfg = gl::mycfg();
+
+        $testgroupname = 'testgroup';
+
+        // Generate for each example a new course + invitation.
+        foreach ($this->examples as $example) {
+            $course = $this->getDataGenerator()->create_course();
+
+            // Create the testgroup before creating the invitations.
+            $groupid = $this->create_group($course->id, $testgroupname);
+
+            // Simulate the form data for creating a new invitation.
+            $result = $this->create_invitation(
+                $course->id,
+                $example->maxusers,
+                $mycfg->userrole,
+                '',
+                $groupid
+            );
+
+            $this->assertTrue((bool) $result);
+
+            // Show that the groupid is in the new invitation record.
+            $invitation = $DB->get_record('local_invitation', ['courseid' => $course->id, 'groupid' => $groupid]);
+            $this->assertNotEmpty($invitation);
         }
         // Compare the count of created invitations with the number of examples.
         $invitations = $DB->get_records('local_invitation');
@@ -122,21 +226,21 @@ final class lib_test extends \advanced_testcase {
      * @covers \local_invitation\helper\util
      * @return void
      */
-    public function test_use_invitation(): void {
+    public function test_use_invitation_without_group(): void {
         $PAGE  = gl::page();
         $DB    = gl::db();
         $mycfg = gl::mycfg();
 
         $course = $this->getDataGenerator()->create_course();
-        // Simulate the form data for creating a new invitation.
-        $invitedata            = new \stdClass();
-        $invitedata->courseid  = $course->id;
-        $invitedata->maxusers  = $this->examples[0]->maxusers;
-        $invitedata->userrole  = $mycfg->userrole;
-        $invitedata->timestart = time();
-        $invitedata->timeend   = time() + 2 * datetime::DAY;
 
-        $result = util::create_invitation($invitedata);
+        // Simulate the form data for creating a new invitation.
+        $result = $this->create_invitation(
+            $course->id,
+            $this->examples[0]->maxusers,
+            $mycfg->userrole,
+            '',
+            0
+        );
         $this->assertTrue((bool) $result);
 
         // Lets get the the invitation-secret by using the courseid.
@@ -149,13 +253,60 @@ final class lib_test extends \advanced_testcase {
         $this->assertIsObject($invitation);
 
         // Simulate the confirm form.
-        $confirmdata            = new \stdClass();
-        $confirmdata->firstname = 'George';
-        $confirmdata->lastname  = 'Meyer';
-        $confirmdata->consent   = true;
-        // Create and login the new user.
-        $newuser = util::create_login_and_enrol($invitation, $confirmdata);
+        $newuser = $this->use_invitation($invitation);
         $this->assertIsObject($newuser);
+
+        /** @var \local_invitation\output\renderer $output */
+        $output = $PAGE->get_renderer('local_invitation');
+        $this->assertIsObject($output);
+
+        // Generate the welcome note.
+        $welcomenote = $output->render(new \local_invitation\output\component\welcome_note($newuser));
+        $this->assertIsString($welcomenote);
+    }
+
+    /**
+     * Test to use an invitation as user with group.
+     *
+     * @covers \local_invitation\helper\util
+     * @return void
+     */
+    public function test_use_invitation_with_group(): void {
+        $PAGE  = gl::page();
+        $DB    = gl::db();
+        $mycfg = gl::mycfg();
+
+        $course = $this->getDataGenerator()->create_course();
+        $testgroupname = 'testgroup';
+
+        // Simulate the form data for creating a new invitation.
+        $result = $this->create_invitation(
+            $course->id,
+            $this->examples[0]->maxusers,
+            $mycfg->userrole,
+            $testgroupname,
+            -1
+        );
+        $this->assertTrue((bool) $result);
+
+        // Lets get the the invitation-secret by using the courseid.
+        $invitationsecret = $DB->get_field('local_invitation', 'secret', ['courseid' => $course->id]);
+        $this->assertIsString($invitationsecret);
+
+        // Now we get the invitation by using the secret.
+        // This is also checking the time.
+        $invitation = util::get_invitation_from_secret($invitationsecret, $course->id);
+        $this->assertIsObject($invitation);
+
+        // Simulate the confirm form.
+        $newuser = $this->use_invitation($invitation);
+        $this->assertIsObject($newuser);
+
+        // Check whether the user is in the testgroup.
+        $testgroup = $DB->get_record('groups', ['courseid' => $course->id, 'name' => $testgroupname]);
+        $this->assertNotEmpty($testgroup);
+        $ismember = $DB->record_exists('groups_members', ['groupid' => $testgroup->id, 'userid' => $newuser->id]);
+        $this->assertTrue($ismember);
 
         /** @var \local_invitation\output\renderer $output */
         $output = $PAGE->get_renderer('local_invitation');
@@ -178,14 +329,13 @@ final class lib_test extends \advanced_testcase {
 
         $course = $this->getDataGenerator()->create_course();
         // Simulate the form data for creating a new invitation.
-        $invitedata            = new \stdClass();
-        $invitedata->courseid  = $course->id;
-        $invitedata->maxusers  = $this->examples[0]->maxusers;
-        $invitedata->userrole  = $mycfg->userrole;
-        $invitedata->timestart = time();
-        $invitedata->timeend   = time() + 2 * datetime::DAY;
-
-        $result = util::create_invitation($invitedata);
+        $result = $this->create_invitation(
+            $course->id,
+            $this->examples[0]->maxusers,
+            $mycfg->userrole,
+            '',
+            0
+        );
         $this->assertTrue((bool) $result);
 
         // Get the invitation by courseid.
@@ -198,5 +348,69 @@ final class lib_test extends \advanced_testcase {
         // We should not find the invitation in the database.
         $check = $DB->get_record('local_invitation', ['id' => $invitation->id]);
         $this->assertFalse($check);
+    }
+
+    /**
+     * Creates a new invitation for a course.
+     *
+     * @param int $courseid The ID of the course to create the invitation for.
+     * @param int $maxusers The maximum number of users that can be invited.
+     * @param int $userrole The role ID of the user role that can be invited.
+     * @param string $groupname The name of the group to which the invitation should be limited.
+     * @param int $groupid The ID of the group to which the invitation should be limited. If 0, no group is specified.
+     * @return bool True if the invitation is created successfully, false otherwise.
+     */
+    protected function create_invitation(int $courseid, int $maxusers, int $userrole, string $groupname, int $groupid): bool {
+        $invitedata            = new \stdClass();
+        $invitedata->courseid  = $courseid;
+        $invitedata->maxusers  = $maxusers;
+        $invitedata->userrole  = $userrole;
+        $invitedata->timestart = time();
+        $invitedata->timeend   = time() + 2 * datetime::DAY;
+        $invitedata->usegroup  = ($groupid !== 0);
+        $invitedata->groupid   = $groupid;
+        $invitedata->groupname = $groupname;
+
+        return (bool) util::create_invitation($invitedata);
+    }
+
+    /**
+     * Creates a new group in a given course.
+     *
+     * @param int $courseid The ID of the course where the group will be created.
+     * @param string $groupname The name of the group to be created.
+     *
+     * @return int The ID of the newly created group.
+     */
+    protected function create_group(int $courseid, string $groupname): int {
+        $groupdata = new \stdClass();
+        $groupdata->courseid = $courseid;
+        $groupdata->name = $groupname;
+        $groupdata->description = get_string('group_created_by_invitation', 'local_invitation');
+        $groupdata->descriptionformat = FORMAT_HTML;
+        $groupdata->enrolmentkey = '';
+        return groups_create_group($groupdata);
+    }
+
+    /**
+     * Simulates the use of an invitation to create and login a new user.
+     *
+     * This function creates a new user with the given firstname, lastname, and consent,
+     * and then enrolls the user in the course associated with the given invitation.
+     * After the user is created and enrolled, the function logs in the user.
+     *
+     * @param \stdClass $invitation The invitation object containing information about the course and user role.
+     * @return \stdClass The newly created and logged-in user.
+     *
+     * @throws \coding_exception If there is an error creating or enrolling the user.
+     * @throws \dml_exception If there is an error logging in the user.
+     */
+    protected function use_invitation($invitation) {
+        $confirmdata            = new \stdClass();
+        $confirmdata->firstname = 'George';
+        $confirmdata->lastname  = 'Meyer';
+        $confirmdata->consent   = true;
+        // Create and login the new user.
+        return util::create_login_and_enrol($invitation, $confirmdata);
     }
 }

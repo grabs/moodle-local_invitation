@@ -56,6 +56,7 @@ $string['invitation_created']                        = 'Invitation successfully 
 $string['invitation_delete_note_timeandlogout']      = 'The temporary account and the associated data are automatically deleted as soon as the user logs out, but at the latest after {$a}.';
 $string['invitation_delete_note_timeonly']           = 'The temporary access and the associated data are automatically deleted after {$a}.';
 $string['invitation_deleted']                        = 'Invitation successfully deleted.';
+$string['invitation_is_not_allowed']                 = 'You are not allowed to invite users.';
 $string['invitation_note']                           = 'You can use the invitation function to grant temporary access to this course. The created invitation link enables users without a regular account to access this course.';
 $string['invitation_updated']                        = 'Invitation successfully updated.';
 $string['invite_participants']                       = 'New invitation for temporary course access';
@@ -75,6 +76,7 @@ If the invited user calls such url he is redirected to its course or to the Mood
 You should not include the Dashboard or the frontpage in this list!';
 $string['qrcode']                 = 'QR Code';
 $string['remove_old_invitations'] = 'Remove old users';
+$string['search_or_create_group'] = 'Search or create group';
 $string['show_icon_in_usernavigation'] = 'Show icon in usernavigation';
 $string['showqrcode']             = 'Show QR Code';
 $string['single_name_field']      = 'Single name field';

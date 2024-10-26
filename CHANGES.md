@@ -4,6 +4,9 @@ moodle-local_invitation
 Changes
 -------
 
+### v4.5
+* 2024-10-26 - Add new feature: use groups for invitation.
+
 ### v4.4
 * 2024-05-08 - Set coursecontact to "null" before enrol to prevent error messages in debugging mode.
 

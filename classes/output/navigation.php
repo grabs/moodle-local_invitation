@@ -38,33 +38,10 @@ class navigation extends \plugin_renderer_base {
         $COURSE = gl::course();
         $DB     = gl::db();
 
-        if ($COURSE->id == SITEID) {
-            return null;
-        }
-
-        if (!util::is_active()) {
-            return null;
-        }
-
+        // Check the permission.
         $context = \context_course::instance($COURSE->id);
-        // Are we really on the course page or maybe in an activity page?
-        if ($PAGE->context->id !== $context->id) {
-            // If the course has no sections the activity page might be the course page.
-            if (course_format_uses_sections($COURSE->format)) {
-                return null;
-            }
-        }
-
-        if (!has_capability('local/invitation:manage', $context)) {
+        if (!util::can_use_invitation($context)) {
             return null;
-        }
-
-        if (!is_enrolled($context, null, '', true)) {
-            if (!is_viewing($context)) {
-                if (!is_siteadmin()) {
-                    return null;
-                }
-            }
         }
 
         if ($DB->get_record('local_invitation', ['courseid' => $COURSE->id])) {

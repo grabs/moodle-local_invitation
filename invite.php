@@ -41,7 +41,7 @@ $PAGE   = gl::page();
 $FULLME = gl::fullme();
 
 require_login($courseid);
-require_capability('local/invitation:manage', $context);
+util::require_can_use_invitation($context);
 
 $title = get_string('invite_participants', 'local_invitation');
 

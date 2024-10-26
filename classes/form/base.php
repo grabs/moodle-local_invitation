@@ -48,6 +48,8 @@ abstract class base extends \moodleform implements \renderable, \templatable {
             'multiple' => false,
             'courseid' => $courseid,
             'noselectionstring' => get_string('no_group_defined', 'local_invitation'),
+            'showsuggestions' => true,
+            'placeholder' => get_string('search_or_create_group', 'local_invitation'),
         ];
         $mform->addElement('autocomplete', 'groupid', get_string('group'), [], $attributes);
         $mform->setType('groupid', PARAM_TEXT);
