@@ -4,6 +4,9 @@ moodle-local_invitation
 Changes
 -------
 
+### v4.5.1
+* 2024-12-17 - Optimize error output.
+
 ### v4.5
 * 2024-10-26 - Add new feature: use groups for invitation.
 
