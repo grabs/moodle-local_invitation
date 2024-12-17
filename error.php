@@ -37,8 +37,9 @@ util::require_active();
 
 // Because it is an enrolment we use the system context.
 $context = context_system::instance();
+$course = get_course(SITEID);
 
-$title = get_string('error_invalid_invitation', 'local_invitation');
+$title = $course->fullname;
 
 $myurl = new \moodle_url($FULLME);
 $myurl->remove_all_params();
@@ -52,12 +53,14 @@ $PAGE->set_title($title);
 /** @var \local_invitation\output\renderer $output */
 $output = $PAGE->get_renderer('local_invitation');
 
-if (isloggedin()) {
-    redirect(new \moodle_url('/'));
-}
+$infobox = new \local_invitation\output\component\infobox(
+    get_string('pluginname', 'local_invitation'),
+    get_string('error_invalid_invitation', 'local_invitation'),
+    'error'
+);
 
 echo $output->header();
-echo $output->heading($title);
 $btn = new single_button(new \moodle_url('/'), get_string('continue'), 'get', true);
+echo $output->render($infobox);
 echo $output->render($btn);
 echo $output->footer();

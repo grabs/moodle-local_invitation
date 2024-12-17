@@ -30,11 +30,16 @@ class infobox extends base {
      *
      * @param string $title
      * @param string $text
+     * @param string $type The style of the infobox. Can be 'warning', 'info', 'success', 'danger'.
      */
-    public function __construct($title, $text) {
+    public function __construct($title, $text, $type = 'info') {
         parent::__construct();
         $this->data['title'] = $title;
         $this->data['text']  = $text;
+        if ($type == 'error') {
+            $type = 'danger';
+        }
+        $this->data['type']  = $type;
     }
 
     /**
