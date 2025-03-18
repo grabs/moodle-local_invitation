@@ -21,7 +21,7 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-define(['jquery'], function($) {
+define(['jquery', 'core/local/aria/focuslock'], function($, FocusLock) {
     return {
         'init': function(modalselector) {
             $(modalselector).on('show.bs.modal', function() {
@@ -35,6 +35,16 @@ define(['jquery'], function($) {
                 setTimeout(function() {
                     $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
                 }, 100);
+            });
+
+            $(modalselector).on('shown.bs.modal', function() {
+                var modal = document.querySelector(modalselector);
+                FocusLock.trapFocus(modal);
+                $('body').css('overflow', '');
+            });
+
+            $(modalselector).on('hidden.bs.modal', function() {
+                FocusLock.untrapFocus();
             });
 
             // Hack to enable stacked modals by making sure the .modal-open class

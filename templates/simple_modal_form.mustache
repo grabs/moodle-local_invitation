@@ -35,13 +35,13 @@
 }}
 <a href="" id="modalbutton-{{uniqid}}" data-bs-toggle="modal" data-bs-target="#modalform-{{uniqid}}" title="{{title}}">{{{linktitle}}}</a>
 <div class="modal fade" id="modalform-{{uniqid}}">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg" data-region="modal" tabindex="0">
         <div class="modal-content">
 
             <!-- Modal Header -->
             <div class="modal-header">
                 <h3 class="modal-title">{{title}}</h3>
-                <button type="button" class="btn-close" data-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
             <!-- Modal body -->
