@@ -4,6 +4,9 @@ moodle-local_invitation
 Changes
 -------
 
+### v5.0
+* adjust code for Moodle 5.0 using Bootstrap 5.3
+
 ### v4.5.1
 * 2024-12-17 - Optimize error output.
 
