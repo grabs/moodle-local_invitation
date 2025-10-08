@@ -16,33 +16,30 @@
 
 namespace local_invitation\output\component;
 
-use local_invitation\globals as gl;
-
 /**
- * Renderable and templatable component for delete box.
+ * Renderable and templatable component to show a list of invitations.
  *
  * @package    local_invitation
  * @author     Andreas Grabs <info@grabs-edv.de>
  * @copyright  2020 Andreas Grabs EDV-Beratung
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class delete_form_box extends base {
-    /** @var \local_invitation\form\base */
-    private $deleteform;
+class invitation_list extends base {
+    /** @var invitation_info[] The invitation_info widgets to be rendered before passing to the template */
+    protected $invitationinfowidgets;
 
     /**
-     * Constructor.
+     * Constructor for the invitation_list class.
      *
-     * @param \local_invitation\form\base $deleteform
+     * Initializes the invitation_list object with the provided invite widgets.
+     *
+     * @param invitation_info[] $invitationinfowidgets An array of invitation_info widget objects to be displayed in the list.
      */
-    public function __construct($deleteform) {
-        $DB = gl::db();
+    public function __construct($invitationinfowidgets) {
+        global $DB;
         parent::__construct();
 
-        $this->deleteform        = $deleteform;
-        $this->data['autoopen']  = false;
-        $this->data['linktitle'] = '<i class="fa fa-trash fa-lg text-danger"></i>';
-        $this->data['title']     = get_string('delete_invitation', 'local_invitation');
+        $this->invitationinfowidgets = $invitationinfowidgets;
     }
 
     /**
@@ -52,7 +49,13 @@ class delete_form_box extends base {
      * @return array
      */
     public function export_for_template(\renderer_base $output) {
-        $this->data['formcontent'] = $this->deleteform->export_for_template($output);
+        $renderedwidgets = [];
+
+        foreach ($this->invitationinfowidgets as $invitationinfowidget) {
+            $renderedwidgets[] = $output->render($invitationinfowidget);
+        }
+        $this->data['hasinvitations'] = count($renderedwidgets);
+        $this->data['invitations'] = $renderedwidgets;
 
         return $this->data;
     }

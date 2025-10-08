@@ -45,6 +45,15 @@ if ($hassiteconfig) {
         false
     );
 
+    $options = array_combine(range(1, 50), range(1, 50));
+    $configs[] = new admin_setting_configselect(
+        'maxinvitations',
+        get_string('max_invitations', 'local_invitation'),
+        get_string('max_invitations_help', 'local_invitation'),
+        util::DEFAULT_MAX_INVITATIONS,
+        $options
+    );
+
     $configs[] = new admin_setting_configcheckbox(
         'showinusernavigation',
         get_string('show_icon_in_usernavigation', 'local_invitation'),
@@ -102,7 +111,8 @@ if ($hassiteconfig) {
         get_string('preventactions_help', 'local_invitation'),
         util::get_default_prevent_actions(),
         PARAM_RAW,
-        120, 8
+        120,
+        8
     );
 
     $configs[] = new admin_setting_configcheckbox(

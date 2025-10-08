@@ -25,12 +25,16 @@
     Example context (json):
     {
         "url": "https://example.com/local/invitation/invite.php?courseid=2",
-        "icon": "<i class=\"icon fa fa-envelope-o fa-fw navicon\" title=\"New invitation for temporary course access\"></i>"
+        "text": "Invitation",
+        "count": 5
     }
 }}
 
-<div class="local-invitation-nav-action">
-    <a id="invite-action-{{uniqid}}" href="{{{url}}}" class="nav-link icon-no-margin">
-        {{{icon}}}
+<div class="local-invitation-nav-action align-content-center">
+    <a class="btn btn-{{#count}}success{{/count}}{{^count}}light{{/count}} btn-sm position-relative" id="invite-action-{{uniqid}}" href="{{{url}}}" title="{{text}}">
+        <i class="fa fa-envelope-o fa-fw fa-lg"></i>
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning">
+            {{count}}
+        </span>
     </a>
 </div>

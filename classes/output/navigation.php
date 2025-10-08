@@ -16,7 +16,6 @@
 
 namespace local_invitation\output;
 
-use local_invitation\globals as gl;
 use local_invitation\helper\util;
 
 /**
@@ -34,23 +33,10 @@ class navigation extends \plugin_renderer_base {
      * @return \navigation_node|null The navigation node
      */
     public static function create_navigation_node() {
-        $PAGE   = gl::page();
-        $COURSE = gl::course();
-        $DB     = gl::db();
+        global $COURSE, $DB;
 
-        // Check the permission.
-        $context = \context_course::instance($COURSE->id);
-        if (!util::can_use_invitation($context)) {
-            return null;
-        }
-
-        if ($DB->get_record('local_invitation', ['courseid' => $COURSE->id])) {
-            $nodetitle = get_string('edit_invitation', 'local_invitation');
-            $pixname   = 'envelope-open';
-        } else {
-            $nodetitle = get_string('invite_participants', 'local_invitation');
-            $pixname   = 'envelope';
-        }
+        $nodetitle = get_string('invitation', 'local_invitation');
+        $pixname   = 'envelope';
         $newnode = \navigation_node::create(
             $nodetitle,
             new \moodle_url('/local/invitation/invite.php', ['courseid' => $COURSE->id]),
@@ -69,21 +55,25 @@ class navigation extends \plugin_renderer_base {
      * @return string The html
      */
     public static function create_nav_action() {
-        $OUTPUT = gl::output();
+        global $DB, $OUTPUT, $COURSE;
 
         $config = get_config('local_invitation');
         if (empty($config->showinusernavigation)) {
             return '';
         }
 
-        if (!$navigationnode = static::create_navigation_node()) {
-            return '';
+        // Check the permission.
+        $context = \context_course::instance($COURSE->id);
+        if (!util::can_use_invitation($context)) {
+            return null;
         }
 
+        $count = $DB->count_records('local_invitation', ['courseid' => $COURSE->id]);
+
         $content = new \stdClass();
-        $content->text = $navigationnode->text;
-        $content->url = $navigationnode->action;
-        $content->icon = $OUTPUT->render($navigationnode->icon);
+        $content->text = get_string('invitation', 'local_invitation');
+        $content->url = new \moodle_url('/local/invitation/invite.php', ['courseid' => $COURSE->id]);
+        $content->count = $count;
         return $OUTPUT->render_from_template('local_invitation/navbar_action', $content);
     }
 }

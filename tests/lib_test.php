@@ -26,7 +26,6 @@
 
 namespace local_invitation;
 
-use local_invitation\globals as gl;
 use local_invitation\helper\date_time as datetime;
 use local_invitation\helper\util;
 
@@ -49,7 +48,7 @@ final class lib_test extends \advanced_testcase {
      * @return void
      */
     protected function setUp(): void {
-        $CFG = gl::cfg();
+        global $CFG;
 
         parent::setUp();
 
@@ -67,7 +66,7 @@ final class lib_test extends \advanced_testcase {
      * @return void
      */
     public function test_render_invitation_note(): void {
-        $PAGE = gl::page();
+        global $PAGE;
 
         /** @var \local_invitation\output\renderer $output */
         $output = $PAGE->get_renderer('local_invitation');
@@ -89,9 +88,8 @@ final class lib_test extends \advanced_testcase {
      * @return void
      */
     public function test_create_invitation_without_group(): void {
-        $CFG   = gl::cfg();
-        $DB    = gl::db();
-        $mycfg = gl::mycfg();
+        global $DB;
+        $mycfg = get_config('local_invitation');
 
         // Generate for each example a new course + invitation.
         foreach ($this->examples as $example) {
@@ -130,9 +128,8 @@ final class lib_test extends \advanced_testcase {
      * @return void
      */
     public function test_create_invitation_with_new_group(): void {
-        $CFG   = gl::cfg();
-        $DB    = gl::db();
-        $mycfg = gl::mycfg();
+        global $DB;
+        $mycfg = get_config('local_invitation');
 
         $testgroupname = 'testgroup';
 
@@ -181,9 +178,8 @@ final class lib_test extends \advanced_testcase {
      * @return void
      */
     public function test_create_invitation_with_existing_group(): void {
-        $CFG   = gl::cfg();
-        $DB    = gl::db();
-        $mycfg = gl::mycfg();
+        global $DB;
+        $mycfg = get_config('local_invitation');
 
         $testgroupname = 'testgroup';
 
@@ -227,9 +223,8 @@ final class lib_test extends \advanced_testcase {
      * @return void
      */
     public function test_use_invitation_without_group(): void {
-        $PAGE  = gl::page();
-        $DB    = gl::db();
-        $mycfg = gl::mycfg();
+        global $PAGE, $DB;
+        $mycfg = get_config('local_invitation');
 
         $course = $this->getDataGenerator()->create_course();
 
@@ -272,9 +267,8 @@ final class lib_test extends \advanced_testcase {
      * @return void
      */
     public function test_use_invitation_with_group(): void {
-        $PAGE  = gl::page();
-        $DB    = gl::db();
-        $mycfg = gl::mycfg();
+        global $PAGE, $DB;
+        $mycfg = get_config('local_invitation');
 
         $course = $this->getDataGenerator()->create_course();
         $testgroupname = 'testgroup';
@@ -324,8 +318,8 @@ final class lib_test extends \advanced_testcase {
      * @return void
      */
     public function test_course_deletion(): void {
-        $DB    = gl::db();
-        $mycfg = gl::mycfg();
+        global $DB;
+        $mycfg = get_config('local_invitation');
 
         $course = $this->getDataGenerator()->create_course();
         // Simulate the form data for creating a new invitation.

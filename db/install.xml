@@ -8,6 +8,7 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="secret" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="groupid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="maxusers" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -20,7 +21,6 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="The unique id for this invitation."/>
       </KEYS>
       <INDEXES>
-        <INDEX NAME="courseid" UNIQUE="true" FIELDS="courseid" COMMENT="The course this invitation belongs to."/>
         <INDEX NAME="secret" UNIQUE="false" FIELDS="secret"/>
       </INDEXES>
     </TABLE>

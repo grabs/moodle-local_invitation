@@ -28,30 +28,37 @@
     Example context (json):
     {
         "title": "New invitation",
-        "linktitle": "<i class=\"fa fa-plus-circle\"></i> New invitation",
+        "linktitle": "New invitation",
+        "icon": "fa-plus-circle",
         "formcontent": "<div>formcontent</div>",
-        "autoopen": 1
+        "autoopen": 0
     }
 }}
-<a href="" id="modalbutton-{{uniqid}}" data-bs-toggle="modal" data-bs-target="#modalform-{{uniqid}}" title="{{title}}">{{{linktitle}}}</a>
-<div class="modal fade" id="modalform-{{uniqid}}">
-    <div class="modal-dialog modal-dialog-scrollable modal-lg" data-region="modal" tabindex="0">
-        <div class="modal-content">
+<a href="" id="modalbutton-{{uniqid}}" data-bs-toggle="modal" data-bs-target="#modalform-{{uniqid}}" title="{{title}}">
+    {{#icon}}<i class="fa {{{.}}} fa-fw"></i>{{/icon}}{{linktitle}}
+</a>
+<div class="modal-wrapper">
+    <div tabindex="-1" style="position: fixed; top: 0px; left: 0px;" aria-hidden="true" data-aria-hidden-tab-index="0"></div>
+    <div class="modal fade moodle-has-zindex" id="modalform-{{uniqid}}" data-region="modal-container" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable" tabindex="0">
+            <div class="modal-content">
 
-            <!-- Modal Header -->
-            <div class="modal-header">
-                <h3 class="modal-title">{{title}}</h3>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h3 class="modal-title">{{title}}</h3>
+                    <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+                </div>
 
-            <!-- Modal body -->
-            <div class="modal-body">
-                <div class="local_invitation-form">
-                    {{{formcontent}}}
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="local_invitation-form">
+                        {{{formcontent}}}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    <div tabindex="-1" style="position: fixed; top: 0px; left: 0px;" aria-hidden="true" data-aria-hidden-tab-index="0"></div>
 </div>
 {{#js}}
 require(['theme_boost/loader']);

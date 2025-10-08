@@ -22,33 +22,38 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use local_invitation\globals as gl;
 use local_invitation\helper\util;
 
 require_once(__DIR__ . '/../../config.php');
 
+global $DB, $PAGE, $FULLME;
+
 util::require_active();
 
-$courseid = required_param('courseid', PARAM_INT);
-$id       = optional_param('id', 0, PARAM_INT);
+$courseid = required_param('courseid', PARAM_INT); // Id of the related course.
+$id       = optional_param('id', 0, PARAM_INT); // Id of the invitation record.
 
-$context  = context_course::instance($courseid);
-$course   = get_course($courseid);
-$autoopen = false;
+// If $id is set, we have to get the course from the invitation.
+// This prevents us from accepting an invitation id from a different course!
+if ($id) {
+    $invitation = $DB->get_record('local_invitation', ['id' => $id], '*', MUST_EXIST);
+    if ((int) $invitation->courseid !== $courseid) {
+        throw new moodle_exception('Wrong id');
+    }
+}
+$course = get_course($courseid);
 
-$DB     = gl::db();
-$PAGE   = gl::page();
-$FULLME = gl::fullme();
+$context = context_course::instance($course->id);
 
 require_login($courseid);
 util::require_can_use_invitation($context);
 
-$title = get_string('invite_participants', 'local_invitation');
+$title = get_string('invitation', 'local_invitation');
 
-$myurl = new \moodle_url($FULLME);
+$myurl = new moodle_url($FULLME);
 $myurl->remove_all_params();
 $myurl->param('courseid', $courseid);
-$courseurl = new \moodle_url('/course/view.php', ['id' => $courseid]);
+$courseurl = new moodle_url('/course/view.php', ['id' => $courseid]);
 
 $PAGE->set_url($myurl);
 $PAGE->set_context($context);
@@ -56,7 +61,6 @@ $PAGE->set_pagelayout('incourse');
 $PAGE->set_heading($course->fullname);
 $PAGE->set_title($title);
 
-$coursesurl = new \moodle_url('/course/index.php');
 $coursename = empty($CFG->navshowfullcoursenames) ?
     format_string($course->shortname, true, ['context' => $context]) :
     format_string($course->fullname, true, ['context' => $context]);
@@ -65,106 +69,118 @@ $PAGE->navbar->ignore_active();
 $PAGE->navbar->add($coursename, $courseurl);
 $PAGE->navbar->add($title);
 
-/** @var \local_invitation\output\renderer $output */
+/** @var local_invitation\output\renderer $output */
 $output = $PAGE->get_renderer('local_invitation');
 
-$invitationinfo = '';
-$invitationnote = $output->render_from_template('local_invitation/invitation_note', ['note' => util::get_invitation_note()]);
-// Common custom data for both forms (invite and update).
-$customdata = [
-    'courseid' => $courseid,
-];
+$invitations           = $DB->get_records('local_invitation', ['courseid' => $courseid], 'timestart ASC');
+$invitationinfowidgets = [];
+// Customdata for all forms.
+$customdata      = ['courseid' => $course->id];
+$defaultautoopen = false;
+if (count($invitations) == 1) {
+    $defaultautoopen = true;
+}
 
-// If there is an invitation we create an info box and a edit form.
-if ($invitation = $DB->get_record('local_invitation', ['courseid' => $courseid])) {
-    // The editopen is used on errors to open the modalbox with the editform after an error.
-    $editopen         = false;
-    $customdata['id'] = $invitation->id; // Append the id to the custom data.
-
-    $editform   = new \local_invitation\form\update(null, $customdata);
-    $deleteform = new \local_invitation\form\delete(null, $customdata);
-
-    $editform->set_data($invitation);
-    if ($editform->is_cancelled()) {
-        redirect($myurl);
-    }
-    if ($deleteform->is_cancelled()) {
-        redirect($myurl);
-    }
-
-    // We need to check whether or not the form is submitted to be aware of some errors in the form.
-    // If there is an error we want the modal box auto open.
-    if ($editform->is_submitted()) {
-        if ($invitedata = $editform->get_data()) {
-            if (!util::update_invitation($invitation, $invitedata)) {
-                throw new \moodle_exception('could not update invitation');
-            }
-            // Redirect to the invitation page.
-            redirect(
-                $myurl,
-                get_string('invitation_updated', 'local_invitation'),
-                null,
-                \core\output\notification::NOTIFY_SUCCESS
-            );
-        } else {
-            $editopen = true;
-        }
-    }
-
-    if ($deleteform->is_submitted()) {
-        if ($deletedata = $deleteform->get_data()) {
-            if (!util::delete_invitation($deletedata->id)) {
-                throw new \moodle_exception('could not delete invitation');
-            }
-            // Redirect to the invitation page.
-            redirect(
-                $myurl,
-                get_string('invitation_deleted', 'local_invitation'),
-                null,
-                \core\output\notification::NOTIFY_SUCCESS
-            );
-        }
-    }
-
-    $invitewidget   = new \local_invitation\output\component\invitation_info($invitation, $editform, $deleteform, $editopen);
-    $invitationinfo = $output->render($invitewidget);
-
-    $formwidget = '';
-} else {
-    $autoopen = true;
-    // This is the form to create a new invitation.
-    $inviteform = new \local_invitation\form\invite(null, $customdata);
+if (!util::has_max_invitations_reached($courseid)) {
+    // Operations for new invitation.
+    $inviteform = new local_invitation\form\edit(null, $customdata);
 
     if ($inviteform->is_cancelled()) {
-        redirect(new \moodle_url('/course/view.php', ['id' => $courseid]));
+        redirect(new moodle_url($myurl, ['courseid' => $courseid, 'id' => $id]));
     }
 
-    // We need to check whether or not the form is submitted to be aware of some errors in the form.
-    // If there is an error we want the collapse auto open.
-    if ($inviteform->is_submitted()) {
+    $inviteopen = false;
+    if (empty($id) && $inviteform->is_submitted()) {
         if ($invitedata = $inviteform->get_data()) {
             // Create the new invitation.
-            if (!util::create_invitation($invitedata)) {
-                throw new \moodle_exception('could not create invitation');
+            if (!$newid = util::create_invitation($invitedata)) {
+                throw new moodle_exception('could not create invitation');
             }
             // Redirect to me to prevent a accidentally reload.
             redirect(
-                $myurl,
+                new moodle_url($myurl, ['courseid' => $courseid, 'id' => $newid]),
                 get_string('invitation_created', 'local_invitation'),
                 null,
-                \core\output\notification::NOTIFY_SUCCESS
+                core\output\notification::NOTIFY_SUCCESS
             );
         } else {
-            $autoopen = true;
+            $inviteopen = true;
         }
     }
-
-    $formwidget = new \local_invitation\output\component\form($inviteform, $title, $autoopen, $courseurl);
-    $formwidget = $output->render($formwidget);
+    $inviteformbox = new local_invitation\output\component\simple_modal_form(
+        $inviteform,
+        get_string('invite_participants', 'local_invitation'),
+        get_string('new_invitation', 'local_invitation'),
+        'fa-plus-circle fa-lg',
+        $inviteopen
+    );
 }
 
+// Operations for show and update existing invitations.
+foreach ($invitations as $invitation) {
+    $infoautoopen     = $defaultautoopen;
+    $formautoopen     = false;
+    $customdata['id'] = $invitation->id; // Append the id to the custom data.
+    $editform         = new local_invitation\form\edit(null, $customdata);
+    $deleteform       = new local_invitation\form\delete(null, $customdata);
+    $editform->set_data($invitation);
+
+    if ($editform->is_cancelled()) {
+        redirect(new moodle_url($myurl, ['courseid' => $courseid, 'id' => $invitation->id]));
+    }
+
+    if ((int) $invitation->id === $id) {
+        if ($editform->is_submitted()) { // Check submission only, if submitted!
+            if ($invitedata = $editform->get_data()) {
+                if (!util::update_invitation($invitation, $invitedata)) {
+                    throw new moodle_exception('could not update invitation');
+                }
+                // Redirect to the invitation page.
+                redirect(
+                    new moodle_url($myurl, ['courseid' => $courseid, 'id' => $id]),
+                    get_string('invitation_updated', 'local_invitation'),
+                    null,
+                    core\output\notification::NOTIFY_SUCCESS
+                );
+            } else {
+                $formautoopen = true;
+            }
+        }
+
+        if ($deleteform->is_submitted()) {
+            if ($deletedata = $deleteform->get_data()) {
+                if (!util::delete_invitation($deletedata->id)) {
+                    throw new moodle_exception('could not delete invitation');
+                }
+                // Redirect to the invitation page.
+                redirect(
+                    $myurl,
+                    get_string('invitation_deleted', 'local_invitation'),
+                    null,
+                    core\output\notification::NOTIFY_SUCCESS
+                );
+            }
+        }
+
+        $infoautoopen = true;
+    }
+    $invitationinfowidget    = new local_invitation\output\component\invitation_info(
+        $invitation,
+        $editform,
+        $deleteform,
+        $infoautoopen,
+        $formautoopen
+    );
+    $invitationinfowidgets[] = $invitationinfowidget;
+}
+
+$widget = new local_invitation\output\component\invitation_list($invitationinfowidgets);
+
 echo $output->header();
-echo $invitationnote;
-echo $invitationinfo;
-echo $formwidget;
+echo $output->heading($title);
+echo $output->render(new local_invitation\output\component\possible_info($courseid));
+if (!util::has_max_invitations_reached($courseid)) {
+    echo $output->render($inviteformbox);
+}
+echo $output->render($widget);
 echo $output->footer();

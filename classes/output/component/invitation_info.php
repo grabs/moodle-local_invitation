@@ -16,8 +16,6 @@
 
 namespace local_invitation\output\component;
 
-use local_invitation\globals as gl;
-
 /**
  * Renderable and templatable component for the edit form.
  *
@@ -27,37 +25,61 @@ use local_invitation\globals as gl;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class invitation_info extends base {
-    /** @var edit_form_box */
+    /** @var simple_modal_form */
     private $editwidget;
-    /** @var delete_form_box */
+    /** @var simple_modal_form */
     private $deletewidget;
 
     /**
-     * Constructor.
+     * Constructor for the invitation_info class.
      *
-     * @param \stdClass                   $invitation
-     * @param \local_invitation\form\base $editform
-     * @param \local_invitation\form\base $deleteform
-     * @param bool                        $autoopen
+     * This function initializes an invitation_info object with the provided invitation details,
+     * creates edit and delete widgets, and prepares various data for display.
+     *
+     * @param \stdClass $invitation   The invitation object containing details like id, courseid, title, etc.
+     * @param mixed     $editform     The form object for editing the invitation.
+     * @param mixed     $deleteform   The form object for deleting the invitation.
+     * @param bool      $infoautoopen Whether the info should be automatically opened.
+     * @param bool      $formautoopen Whether the edit form should be automatically opened.
+     *
+     * @return void
      */
-    public function __construct(\stdClass $invitation, $editform, $deleteform, $autoopen) {
-        $DB = gl::db();
+    public function __construct(\stdClass $invitation, $editform, $deleteform, $infoautoopen, $formautoopen) {
+        global $DB;
         parent::__construct();
 
+        // Count the number of users who have used this invitation.
         $usedslots = $DB->count_records('local_invitation_users', ['invitationid' => $invitation->id]);
 
-        $this->editwidget   = new edit_form_box($editform, $autoopen);
-        $this->deletewidget = new delete_form_box($deleteform);
+        // Create a modal form widget for editing the invitation.
+        $this->editwidget   = new simple_modal_form(
+            $editform,
+            get_string('edit_invitation', 'local_invitation'),
+            '',
+            'fa-pencil fa-lg',
+            $formautoopen
+        );
 
+        // Create a modal form widget for deleting the invitation.
+        $this->deletewidget = new simple_modal_form(
+            $deleteform,
+            get_string('delete_invitation', 'local_invitation'),
+            '',
+            'fa-trash fa-lg text-danger'
+        );
+
+        // Prepare URL parameters for the invitation link.
         $urlparams = [
             'courseid' => $invitation->courseid,
             'id'       => $invitation->secret,
         ];
+        // Create URLs for the course and invitation.
         $courseurl     = new \moodle_url('/course/view.php', ['id' => $invitation->courseid]);
         $invitationurl = new \moodle_url('/local/invitation/join.php', $urlparams);
 
+        // Set up date format and prepare data for display.
         $dateformat                     = get_string('strftimedatetimeshort');
-        $this->data['title']            = get_string('current_invitation', 'local_invitation');
+        $this->data['title']            = $invitation->title ?? get_string('invitation', 'local_invitation');
         $this->data['url']              = $invitationurl;
         $this->data['timestart']        = userdate($invitation->timestart, $dateformat, 99, false);
         $this->data['timestartwarning'] = $invitation->timestart > time();
@@ -65,22 +87,28 @@ class invitation_info extends base {
         $this->data['timeendwarning']   = $invitation->timeend < time();
         $this->data['courseurl']        = $courseurl;
 
+        // Set up slot information.
         $this->data['usedslots'] = $usedslots;
         if ($invitation->maxusers != 0) {
+            // Calculate remaining slots if there's a limit.
             $slots                   = (int) $invitation->maxusers - $usedslots;
             $this->data['slots']     = $slots;
             $this->data['freeslots'] = $slots > 0;
         } else {
+            // Set slots to unlimited if there's no maximum.
             $this->data['slots']     = get_string('unlimited');
             $this->data['freeslots'] = true;
         }
 
+        // Generate QR code for the invitation URL.
         $qrcode                          = new \core_qrcode($invitationurl->out(false));
         $this->data['qrcodetitle']       = get_string('qrcode', 'local_invitation');
         $this->data['qrcodebuttontitle'] = get_string('showqrcode', 'local_invitation');
         $this->data['qrcodeimg']         = 'data:image/png;base64,' . base64_encode((string) $qrcode->getBarcodePngData(5, 5));
 
+        // Set additional information.
         $this->data['note'] = get_string('current_invitation_note', 'local_invitation');
+        $this->data['autoopen'] = $infoautoopen;
     }
 
     /**

@@ -12,6 +12,7 @@ Feature: Use an invitation as guest user
       | teacher1 | C1     | editingteacher |
     And the following config values are set as admin:
       | active            | 1  | local_invitation |
+      | maxinvitations    | 5  | local_invitation |
       | deleteafterlogout | 0  | local_invitation |
       | expiration        | 1  | local_invitation |
       | maxusers          | 15 | local_invitation |
@@ -22,13 +23,18 @@ Feature: Use an invitation as guest user
     When I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I click on "#topofscroll nav.moremenu li[data-region=\"morebutton\"] > a" "css_element"
+    And I should see "Invitation"
+    And I click on "Invitation" "link" in the "#topofscroll nav.moremenu" "css_element"
+    And I should see "Possible invitations: 0/5"
+    And I should see "New invitation"
+    And I click on "New invitation" "link"
     And I should see "New invitation for temporary course access"
-    And I click on "New invitation for temporary course access" "link" in the "#topofscroll nav.moremenu" "css_element"
-    And I should see "New invitation for temporary course access"
-    And I should see "Maximum users"
+    And I set the field "Title" to "Test Invitation"
     And I set the field "Maximum users" to "5"
+    And I click on "Use group" "checkbox"
+    And I set the field "Group" to "Group-A-Test"
     And I press "Save changes"
-    And I should see "Current invitation"
+    Then I should see "Invitation successfully created."
     And I visit "#region-main div.invitation-url > a" "css_element" after logout
     Then I should see "Invitation"
     And I set the field "Name" to "George"

@@ -16,7 +16,6 @@
 
 namespace local_invitation;
 
-use local_invitation\globals as gl;
 use local_invitation\helper\util;
 
 /**
@@ -35,7 +34,7 @@ class observer {
      * @return void
      */
     public static function course_deleted(\core\event\course_deleted $event) {
-        $DB = gl::db();
+        global $DB;
 
         $courseid = $event->courseid;
 
@@ -48,7 +47,7 @@ class observer {
      * @param \core\event\user_loggedout $event
      */
     public static function user_loggedout(\core\event\user_loggedout $event) {
-        $mycfg = gl::mycfg();
+        global $mycfg;
 
         if (!util::is_active()) {
             return;

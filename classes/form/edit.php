@@ -16,18 +16,17 @@
 
 namespace local_invitation\form;
 
-use local_invitation\helper\util;
 use local_invitation\helper\date_time as datetime;
 
 /**
- * The invitation form.
+ * The update form.
  *
  * @package    local_invitation
  * @author     Andreas Grabs <info@grabs-edv.de>
  * @copyright  2020 Andreas Grabs EDV-Beratung
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class invite extends base {
+class edit extends base {
     /** @var \stdClass */
     private $myconfig;
 
@@ -51,6 +50,10 @@ class invite extends base {
             throw new \moodle_exception('Missing courseid in customdata');
         }
 
+        $mform->addElement('hidden', 'id');
+        $mform->setType('id', PARAM_INT);
+        $mform->setConstant('id', $customdata->id ?? 0);
+
         $mform->addElement('hidden', 'courseid');
         $mform->setType('courseid', PARAM_INT);
         $mform->setConstant('courseid', $customdata->courseid);
@@ -58,6 +61,10 @@ class invite extends base {
         $mform->addElement('hidden', 'userrole');
         $mform->setType('userrole', PARAM_INT);
         $mform->setConstant('userrole', $this->myconfig->userrole);
+
+        $mform->addElement('text', 'title', get_string('title', 'local_invitation'));
+        $mform->addRule('title', null, 'required', null, 'client');
+        $mform->setType('title', PARAM_TEXT);
 
         $options = self::get_maxusers_options($this->myconfig->maxusers);
         $mform->addElement('select', 'maxusers', get_string('max_users', 'local_invitation'), $options);
@@ -69,14 +76,16 @@ class invite extends base {
             'date_time_selector',
             'timestart',
             get_string('available_from', 'local_invitation'),
-            $timeoptions
+            $timeoptions,
+            ['id' => uniqid('timestart_')]
         );
         $mform->setDefault('timestart', $timestart);
         $mform->addElement(
             'date_time_selector',
             'timeend',
             get_string('available_to', 'local_invitation'),
-            $timeoptions
+            $timeoptions,
+            ['id' => uniqid('timeend_')]
         );
         $mform->setDefault('timeend', $timeend);
 
@@ -115,15 +124,35 @@ class invite extends base {
     }
 
     /**
+     * Load in existing data as form defaults.
+     *
+     * @param \stdClass|array $defaultvalues
+     */
+    public function set_data($defaultvalues) {
+        if (!empty($defaultvalues->groupid)) {
+            if ($group = groups_get_group($defaultvalues->groupid)) {
+                $defaultvalues->groupid = $group->name;
+                $defaultvalues->usegroup = true;
+            } else {
+                $defaultvalues->groupid = null;
+            }
+        } else {
+            $defaultvalues->groupid = null;
+        }
+        parent::set_data($defaultvalues);
+    }
+
+    /**
      * Return submitted data if properly submitted or returns NULL if validation fails or
      * if there is no submitted data.
      *
      * @return \stdClass|null
      */
     public function get_data() {
-        $data = parent::get_data();
+        if ($data = parent::get_data()) {
+            $data = $this->prepare_usegroup_data($data);
+        }
 
-        $data = $this->prepare_usegroup_data($data);
         return $data;
     }
 }
