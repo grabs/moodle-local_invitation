@@ -30,7 +30,6 @@ require_once($CFG->libdir . '/formslib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class base extends \moodleform implements \renderable, \templatable {
-
     /**
      * Adds a usegroup element to the form.
      *
@@ -42,7 +41,7 @@ abstract class base extends \moodleform implements \renderable, \templatable {
      * @param int $courseid The id of the course the group belongs to.
      */
     protected function add_usegroup_element(\MoodleQuickForm $mform, int $courseid) {
-        $mform->addElement('checkbox', 'usegroup', get_string('usegroup', 'local_invitation'));
+        $mform->addElement('checkbox', 'usegroup', get_string('usegroup', 'local_invitation'), '', ['id' => uniqid('usegroup_')]);
         $attributes = [
             'ajax' => 'local_invitation/form_group_selector',
             'multiple' => false,
@@ -50,6 +49,7 @@ abstract class base extends \moodleform implements \renderable, \templatable {
             'noselectionstring' => get_string('no_group_defined', 'local_invitation'),
             'showsuggestions' => true,
             'placeholder' => get_string('search_or_create_group', 'local_invitation'),
+            'id' => uniqid('groupidselector_'), // Because there are multiple forms on the page, we give it a unique id.
         ];
         $mform->addElement('autocomplete', 'groupid', get_string('group'), [], $attributes);
         $mform->setType('groupid', PARAM_TEXT);

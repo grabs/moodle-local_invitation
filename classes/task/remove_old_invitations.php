@@ -16,7 +16,6 @@
 
 namespace local_invitation\task;
 
-use local_invitation\globals as gl;
 use local_invitation\helper\util;
 
 /**
@@ -41,7 +40,7 @@ class remove_old_invitations extends \core\task\scheduled_task {
      * Run this task.
      */
     public function execute() {
-        $DB = gl::db();
+        global $DB;
 
         util::remove_old_invitations(true);
         util::anonymize_and_delete_expired_users(true);

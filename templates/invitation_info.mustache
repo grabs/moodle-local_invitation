@@ -38,7 +38,7 @@
 
     Example context (json):
     {
-        "title": "Create an invitation",
+        "title": "Example invitation",
         "editformbox": "<div>edit form content</div>",
         "deleteformbox": "<div>delete form content</div>",
         "qrcodebutton": "<div>content with qr-code</div>",
@@ -55,97 +55,106 @@
         "courseurl": "https://example.com"
     }
 }}
+    <div class="card invitationsettings mb-3 bg-light border border-primary">
+        <div class="d-flex align-content-center m-2">
+            <a role="button" data-toggle="collapse" href="#invitation-{{uniqid}}" aria-expanded="{{#autoopen}}true{{/autoopen}}{{^autoopen}}false{{/autoopen}}" class="btn btn-icon icons-collapse-expand justify-content-center{{^autoopen}} collapsed{{/autoopen}}" aria-label="{{title}}">
+                <span class="expanded-icon icon-no-margin p-2" title="{{#str}} collapse, core {{/str}}">
+                    <i class="icon fa fa-chevron-down fa-fw " aria-hidden="true"></i>
+                    <span class="sr-only">{{#str}} collapse, core {{/str}}</span>
+                </span>
+                <span class="collapsed-icon icon-no-margin p-2" title="{{#str}} expand, core {{/str}}">
+                    <span class="dir-rtl-hide"><i class="icon fa fa-chevron-right fa-fw " aria-hidden="true"></i></span>
+                    <span class="dir-ltr-hide"><i class="icon fa fa-chevron-left fa-fw " aria-hidden="true"></i></span>
+                    <span class="sr-only">{{#str}} expand, core {{/str}}</span>
+                </span>
+            </a>
+            <h3 class="m-1 align-content-center">
+                <a role="button" class="text-decoration-none" data-toggle="collapse" href="#invitation-{{uniqid}}" aria-expanded="{{#autoopen}}true{{/autoopen}}{{^autoopen}}false{{/autoopen}}" aria-label="{{title}}">
+                    {{title}}
+                </a>
+            </h3>
+            <div class="ms-2 align-self-center">{{{editformbox}}}</div>
+            <div class="ms-2 align-self-center">{{{deleteformbox}}}</div>
+            <div class="ms-2 align-self-center">{{{qrcodebutton}}}</div>
+        </div>
 
-<div class="row">
-    <div class="col-lg-7">
-        <div class="card invitationsettings mb-3 bg-light border border-primary">
-            <div class="card-body">
-                <div class="card-title">
-                    <div class="d-flex">
-                        <h2>{{title}}</h2>
-                        <div class="ml-2 align-self-center">{{{editformbox}}}</div>
-                        <div class="ml-2 align-self-center">{{{deleteformbox}}}</div>
-                        <div class="ml-2 align-self-center">{{{qrcodebutton}}}</div>
-                    </div>
+        <div class="card-body collapse{{#autoopen}} show{{/autoopen}}" id="invitation-{{uniqid}}">
+            <div class="invitation-url">
+                <a id="inviteurl-{{uniqid}}" href="{{{url}}}">{{{url}}}</a>
+                <button id="copy-{{uniqid}}" class="btn btn-secondary" data-toggle="tooltip" title="{{#str}} clipboard, local_invitation {{/str}}">
+                    <i class="fa fa-clipboard"></i>
+                </button>
+            </div>
+            <div class="row mt-2">
+                <div class="col-xl-7">
+                    <table class="table table-sm">
+                        <tbody>
+                            <tr>
+                                <th>
+                                    {{#str}} available_from, local_invitation {{/str}}
+                                </th>
+                                <td {{#timestartwarning}}class="text-danger"{{/timestartwarning}}>
+                                    {{timestart}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    {{#str}} available_to, local_invitation {{/str}}
+                                </th>
+                                <td {{#timeendwarning}}class="text-danger"{{/timeendwarning}}>
+                                    {{timeend}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    {{#str}} usedslots, local_invitation {{/str}}
+                                </th>
+                                <td>
+                                    {{usedslots}}
+                                </td>
+                            </tr>
+                            <tr>
+                                {{#freeslots}}
+                                    <th class="text-success">
+                                        {{#str}} free_slots, local_invitation {{/str}}
+                                    </th>
+                                    <td class="text-success">
+                                        {{slots}} <i class="fa fa-check"></i>
+                                    </td>
+                                {{/freeslots}}
+                                {{^freeslots}}
+                                    <th class="text-danger">
+                                        {{#str}} free_slots, local_invitation {{/str}}
+                                    </th>
+                                    <td class="text-danger">
+                                        {{slots}} <i class="fa fa-times"></i>
+                                    </td>
+                                {{/freeslots}}
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="invitation-url">
-                    <a id="inviteurl-{{uniqid}}" href="{{{url}}}">{{{url}}}</a>
-                    <button id="copy-{{uniqid}}" class="btn btn-secondary" data-toggle="tooltip" title="{{#str}} clipboard, local_invitation {{/str}}">
-                        <i class="fa fa-clipboard"></i>
-                    </button>
-                </div>
-                <div class="row mt-2">
-                    <div class="col-xl-7">
-                        <table class="table table-sm">
-                            <tbody>
-                                <tr>
-                                    <th>
-                                        {{#str}} available_from, local_invitation {{/str}}
-                                    </th>
-                                    <td {{#timestartwarning}}class="text-danger"{{/timestartwarning}}>
-                                        {{timestart}}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>
-                                        {{#str}} available_to, local_invitation {{/str}}
-                                    </th>
-                                    <td {{#timeendwarning}}class="text-danger"{{/timeendwarning}}>
-                                        {{timeend}}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>
-                                        {{#str}} usedslots, local_invitation {{/str}}
-                                    </th>
-                                    <td>
-                                        {{usedslots}}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    {{#freeslots}}
-                                        <th class="text-success">
-                                            {{#str}} free_slots, local_invitation {{/str}}
-                                        </th>
-                                        <td class="text-success">
-                                            {{slots}} <i class="fa fa-check"></i>
-                                        </td>
-                                    {{/freeslots}}
-                                    {{^freeslots}}
-                                        <th class="text-danger">
-                                            {{#str}} free_slots, local_invitation {{/str}}
-                                        </th>
-                                        <td class="text-danger">
-                                            {{slots}} <i class="fa fa-times"></i>
-                                        </td>
-                                    {{/freeslots}}
-                                </tr>
-                            </tbody>
-                        </table>
+                <div class="col-xl-5">
+                    <div class="d-none d-xl-flex justify-content-center qrcode">
+                        <img class="qrcode" src="{{{qrcodeimg}}}" alt="qrcodetitle">
                     </div>
-                    <div class="col-xl-5">
-                        <div class="d-none d-xl-flex justify-content-center qrcode">
-                            <img class="qrcode" src="{{{qrcodeimg}}}" alt="qrcodetitle">
-                        </div>
-                        <div class="d-inline d-xl-none">
-                            <button class="btn btn-secondary btn-sm" data-toggle="collapse" data-target="#qrcode-{{uniqid}}">{{qrcodebuttontitle}}</button>
-                            <div id="qrcode-{{uniqid}}" class="collapse">
-                                <img class="qrcode mt-2" src="{{{qrcodeimg}}}" alt="qrcodetitle">
-                            </div>
+                    <div class="d-inline d-xl-none">
+                        <button class="btn btn-secondary btn-sm" data-toggle="collapse" data-target="#qrcode-{{uniqid}}">{{qrcodebuttontitle}}</button>
+                        <div id="qrcode-{{uniqid}}" class="collapse">
+                            <img class="qrcode mt-2" src="{{{qrcodeimg}}}" alt="qrcodetitle">
                         </div>
                     </div>
                 </div>
-                <div class="invitation-note">
-                    <span class="font-weight-bold">{{#str}} note, local_invitation {{/str}}</span>
-                    <span>{{note}}</span>
-                </div>
-                <div class="back-to-course">
-                    <a href="{{{courseurl}}}" class="btn btn-primary"><i class="fa fa-arrow-left"></i> {{#str}} back_to_course, local_invitation{{/str}}</a>
-                </div>
+            </div>
+            <div class="invitation-note">
+                <span class="font-weight-bold">{{#str}} note, local_invitation {{/str}}</span>
+                <span>{{note}}</span>
+            </div>
+            <div class="back-to-course">
+                <a href="{{{courseurl}}}" class="btn btn-primary"><i class="fa fa-arrow-left"></i> {{#str}} back_to_course, local_invitation{{/str}}</a>
             </div>
         </div>
     </div>
-</div>
 {{#js}}
 require(['local_invitation/clipboard'], function(clipboard) {
     clipboard.init(

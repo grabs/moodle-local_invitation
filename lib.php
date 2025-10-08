@@ -22,7 +22,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use local_invitation\globals as gl;
 use local_invitation\helper\util;
 use local_invitation\output\navigation as nav;
 
@@ -43,7 +42,7 @@ function local_invitation_render_navbar_output() {
  * @param global_navigation $navigation
  */
 function local_invitation_extend_navigation(global_navigation $navigation) {
-    $USER = gl::user();
+    global $USER;
 
     // Prevent some urls to invited users.
     util::prevent_actions($USER);

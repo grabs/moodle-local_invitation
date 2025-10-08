@@ -25,7 +25,12 @@ define(['jquery'], function($) {
     return {
         'init': function(modalselector) {
             $(modalselector).on('show.bs.modal', function() {
-                $(this).appendTo('body');
+                var modalwrapper = document.querySelector(modalselector).closest('.modal-wrapper');
+                document.body.append(modalwrapper);
+            });
+            $(modalselector).on('shown.bs.modal', function() {
+                var dialog = document.querySelector(modalselector + ' .modal-dialog');
+                dialog.focus();
             });
 
             // Hack for stacked modals to show the backdrop with the right z-index.

@@ -16,7 +16,6 @@
 
 namespace local_invitation\helper;
 
-use local_invitation\globals as gl;
 use local_invitation\helper\date_time as datetime;
 
 /**
@@ -42,6 +41,9 @@ class util {
         'badges'            => '#badges/.*#',
         'messages'          => '#message/index.php#',
     ];
+
+    /** Default value for maximum number of invitations allowed. */
+    public const DEFAULT_MAX_INVITATIONS = 5;
 
     /**
      * Get all roles as choice parameters.
@@ -69,7 +71,7 @@ class util {
      * @return array the array with role records
      */
     public static function get_roles_for_contextlevel($contextlevel) {
-        $DB = gl::db();
+        global $DB;
 
         $sql = 'SELECT r.*
                 FROM {role} r
@@ -88,7 +90,7 @@ class util {
      * @return string
      */
     public static function generate_secret_for_inventation() {
-        $DB = gl::db();
+        global $DB;
 
         $secret = \core\uuid::generate();
         while ($DB->count_records('local_invitation', ['secret' => $secret]) > 0) {
@@ -105,7 +107,7 @@ class util {
      * @return bool|int
      */
     public static function create_invitation($invitedata) {
-        $DB = gl::db();
+        global $DB;
 
         // We start a transaction because there is some stuff we need to do that might fail.
         $transaction = $DB->start_delegated_transaction();
@@ -113,7 +115,6 @@ class util {
         // Do we use a group in our new invitation?
         $invitedata->groupid = static::get_groupid_from_formdata($invitedata);
 
-        $DB->delete_records('local_invitation', ['courseid' => $invitedata->courseid]);
         $invitedata->timemodified = time();
         $invitedata->secret       = self::generate_secret_for_inventation();
 
@@ -130,11 +131,12 @@ class util {
      * @return bool
      */
     public static function update_invitation($invitation, $invitedata) {
-        $DB = gl::db();
+        global $DB;
 
         // Do we use a group in our new invitation?
         $invitation->groupid = static::get_groupid_from_formdata($invitedata);
 
+        $invitation->title     = $invitedata->title;
         $invitation->timestart = $invitedata->timestart;
         $invitation->timeend   = $invitedata->timeend;
         $invitation->maxusers  = $invitedata->maxusers;
@@ -150,7 +152,8 @@ class util {
      * @return int
      */
     public static function get_groupid_from_formdata($invitedata) {
-        $CFG = gl::cfg();
+        global $CFG;
+
         require_once($CFG->dirroot . '/group/lib.php');
 
         // Do we use a group in our invitation?
@@ -189,7 +192,7 @@ class util {
      * @return bool
      */
     public static function delete_invitation($invitationid) {
-        $DB = gl::db();
+        global $DB;
 
         return $DB->delete_records('local_invitation', ['id' => $invitationid]);
     }
@@ -202,7 +205,7 @@ class util {
      * @return \stdClass
      */
     public static function get_invitation_from_secret($secret, $courseid) {
-        $DB = gl::db();
+        global $DB;
 
         $params              = [];
         $params['courseid']  = $courseid;
@@ -238,9 +241,7 @@ class util {
      * @return \stdClass|bool The new user record or false
      */
     public static function create_login_and_enrol($invitation, $confirmdata) {
-        $DB    = gl::db();
-        $mycfg = gl::mycfg();
-        $CFG   = gl::cfg();
+        global $DB, $mycfg, $CFG;
 
         // We don't want to send a welcome message to the dummy user.
         // The only way, I found, to prevent this message, is to remove the coursecontact from the $CFG variable.
@@ -302,7 +303,7 @@ class util {
      * @return \stdClass the new created user
      */
     private static function create_login($firstname, $lastname) {
-        $CFG = gl::cfg();
+        global $CFG;
 
         require_once($CFG->dirroot . '/user/lib.php');
 
@@ -340,8 +341,8 @@ class util {
      * @return void
      */
     private static function enrol_user($invitation, $user) {
-        $CFG = gl::cfg();
-        $DB = gl::db();
+        global $CFG, $DB;
+
         require_once($CFG->dirroot . '/group/lib.php');
 
         $manual = enrol_get_plugin('manual');
@@ -375,7 +376,7 @@ class util {
      * @return string the new username
      */
     private static function get_free_username($prefix) {
-        $DB = gl::db();
+        global $DB;
 
         $username = $prefix . random_string();
         $username = clean_param($username, PARAM_USERNAME);
@@ -392,7 +393,7 @@ class util {
      * @return string the email domain
      */
     private static function get_email_domain() {
-        $DB = gl::db();
+        global $DB;
 
         $domain = random_string();
         $domain .= '.invalid'; // Use "invalid" as top level domain to prevent sending emails.
@@ -406,23 +407,29 @@ class util {
      * @return bool
      */
     public static function is_active() {
-        $cfg = get_config('local_invitation');
+        $mycfg = get_config('local_invitation');
 
-        return (bool) $cfg->active;
+        return (bool) $mycfg->active;
     }
 
     /**
-     * Is the given user an invited user?
+     * Checks if a user is invited based on their user ID.
      *
-     * @param  int  $userid
-     * @return bool
+     * This function verifies if a user is invited by checking the 'local_invitation_users' table
+     * for a record matching the given user ID. If found, it returns the user's record from the 'user' table.
+     *
+     * @param int $userid The ID of the user to check for invitation status.
+     *
+     * @return \stdClass|false Returns the user record as an object if the user is invited,
+     *                         or false if the user is not invited or doesn't exist.
      */
     public static function is_user_invited($userid) {
-        $DB = gl::db();
+        global $DB;
 
         if ($DB->record_exists('local_invitation_users', ['userid' => $userid])) {
             return $DB->get_record('user', ['id' => $userid]);
         }
+        return false;
     }
 
     /**
@@ -431,7 +438,7 @@ class util {
      * @return string
      */
     public static function get_consent() {
-        $mycfg   = gl::mycfg();
+        $mycfg = get_config('local_invitation');
         $consent = $mycfg->consent;
 
         return $consent;
@@ -454,7 +461,7 @@ class util {
      * @return void
      */
     public static function set_all_users_expired() {
-        $DB = gl::db();
+        global $DB;
 
         $sql = 'UPDATE {local_invitation_users} SET timecreated = 0';
         $DB->execute($sql);
@@ -467,8 +474,8 @@ class util {
      * @return void
      */
     public static function anonymize_and_delete_expired_users($tracing = false) {
-        $DB    = gl::db();
-        $mycfg = gl::mycfg();
+        global $DB;
+        $mycfg = get_config('local_invitation');
 
         // First clean old records of already deleted users.
         self::remove_deleted_users();
@@ -515,7 +522,7 @@ class util {
      * @return void
      */
     public static function remove_deleted_users() {
-        $DB = gl::db();
+        global $DB;
 
         $sql = 'SELECT u.*
                 FROM {local_invitation_users} iu
@@ -538,7 +545,7 @@ class util {
      * @return void
      */
     public static function anonymize_and_delete_user($user) {
-        $DB = gl::db();
+        global $DB;
 
         $user->firstname = '-';
         $user->lastname  = '-';
@@ -555,8 +562,8 @@ class util {
      * @return void
      */
     public static function remove_old_invitations($tracing = false) {
-        $DB    = gl::db();
-        $mycfg = gl::mycfg();
+        global $DB;
+        $mycfg = get_config('local_invitation');
 
         if ($tracing) {
             mtrace('Remove old invitations ... ');
@@ -617,14 +624,12 @@ class util {
      * @return void
      */
     public static function prevent_actions($user) {
-        global $FULLME;
-        $mycfg = gl::mycfg();
+        global $FULLME, $COURSE;
+        $mycfg = get_config('local_invitation');
 
         if (empty($mycfg->preventactions)) {
             return;
         }
-
-        $COURSE = gl::course();
 
         if (!self::is_user_invited($user->id)) {
             return;
@@ -681,7 +686,7 @@ class util {
      * @return string
      */
     public static function get_invitation_note() {
-        $mycfg = gl::mycfg();
+        $mycfg = get_config('local_invitation');
 
         $invitationnote1 = get_string('invitation_note', 'local_invitation');
 
@@ -710,6 +715,37 @@ class util {
     }
 
     /**
+     * Checks if the maximum number of invitations has been reached for a given course.
+     *
+     * This function counts the number of invitations for the specified course and
+     * compares it with the maximum allowed invitations.
+     *
+     * @param int $courseid The ID of the course to check invitations for.
+     *
+     * @return bool Returns true if the maximum number of invitations has been reached,
+     *              false otherwise.
+     */
+    public static function has_max_invitations_reached(int $courseid) {
+        global $DB;
+
+        $count = $DB->count_records('local_invitation', ['courseid' => $courseid]);
+        return $count >= static::get_max_invitations();
+    }
+
+    /**
+     * Retrieves the maximum number of invitations allowed.
+     *
+     * This function fetches the 'maxinvitations' configuration value from the 'local_invitation' plugin.
+     * If the configuration value is not set, it falls back to the default value defined by DEFAULT_MAX_INVITATIONS.
+     *
+     * @return int The maximum number of invitations allowed. Returns the configured value or the default if not set.
+     */
+    public static function get_max_invitations() {
+        $mycfg = get_config('local_invitation');
+        return (int) $mycfg->maxinvitations ?? static::DEFAULT_MAX_INVITATIONS;
+    }
+
+    /**
      * Determines if a group with a given groupid exists in the given course.
      *
      * @param int $groupid The groupid to check for
@@ -718,7 +754,7 @@ class util {
      * occurred.
      */
     public static function group_exists_in_course($groupid, $courseid) {
-        $DB = gl::db();
+        global $DB;
         return $DB->record_exists('groups', ['id' => $groupid, 'courseid' => $courseid]);
     }
 

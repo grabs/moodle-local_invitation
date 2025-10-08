@@ -22,7 +22,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use local_invitation\globals as gl;
 use local_invitation\helper\util;
 
 // We do not have a login check in this file because the login is actually done here.
@@ -30,8 +29,7 @@ use local_invitation\helper\util;
 // @codingStandardsIgnoreLine
 require_once(__DIR__ . '/../../config.php');
 
-$PAGE   = gl::page();
-$FULLME = gl::fullme();
+global $PAGE, $FULLME;
 
 util::require_active();
 

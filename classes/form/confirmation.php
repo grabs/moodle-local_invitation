@@ -16,7 +16,6 @@
 
 namespace local_invitation\form;
 
-use local_invitation\globals as gl;
 use local_invitation\helper\util;
 
 /**
@@ -37,9 +36,7 @@ class confirmation extends base {
      * @return void
      */
     public function definition() {
-        $CFG    = gl::cfg();
-        $OUTPUT = gl::output();
-        $mycfg  = gl::mycfg();
+        $mycfg = get_config('local_invitation');
 
         $this->myconfig = get_config('local_invitation');
         if (empty($this->myconfig->userrole)) {
@@ -102,7 +99,7 @@ class confirmation extends base {
      * @return array|object
      */
     public function get_data() {
-        $mycfg = gl::mycfg();
+        $mycfg = get_config('local_invitation');
 
         if (!$data = parent::get_data()) {
             return $data;

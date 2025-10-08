@@ -22,7 +22,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use local_invitation\globals as gl;
 use local_invitation\helper\util;
 
 // We do not have a login check in this file because the login is actually done here.
@@ -30,14 +29,12 @@ use local_invitation\helper\util;
 // @codingStandardsIgnoreLine
 require_once(__DIR__ . '/../../config.php');
 
+global $DB, $USER, $FULLME;
+
 util::require_active();
 
 $courseid = required_param('courseid', PARAM_INT);
 $secret   = required_param('id', PARAM_TEXT);
-
-$DB     = gl::db();
-$USER   = gl::user();
-$FULLME = gl::fullme();
 
 // Because it is an enrolment we use the system context.
 $context = context_system::instance();
