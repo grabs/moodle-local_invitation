@@ -4,6 +4,9 @@ moodle-local_invitation
 Changes
 -------
 
+### v5.1
+* New feature to create multiple invitations per course.
+
 ### v5.0
 * adjust code for Moodle 5.0 using Bootstrap 5.3
 
