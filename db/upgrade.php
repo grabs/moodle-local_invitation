@@ -85,5 +85,30 @@ function xmldb_local_invitation_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024082400, 'local', 'invitation');
     }
 
+    if ($oldversion < 2024121800) {
+        // Define index courseid (unique) to be dropped form local_invitation.
+        $table = new xmldb_table('local_invitation');
+        $index = new xmldb_index('courseid', XMLDB_INDEX_UNIQUE, ['courseid']);
+
+        // Conditionally launch drop index courseid.
+        if ($dbman->index_exists($table, $index)) {
+            $dbman->drop_index($table, $index);
+        }
+
+        // Define field name to be added to local_invitation.
+        $table = new xmldb_table('local_invitation');
+        $field = new xmldb_field('title', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'secret');
+
+        // Conditionally launch add field name.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+            // Because the field is new, we can add a default value for it.
+            $DB->set_field('local_invitation', 'title', get_string('invitation', 'local_invitation'));
+        }
+
+        // Invitation savepoint reached.
+        upgrade_plugin_savepoint(true, 2024121800, 'local', 'invitation');
+    }
+
     return true;
 }

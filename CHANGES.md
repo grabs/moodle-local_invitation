@@ -4,6 +4,9 @@ moodle-local_invitation
 Changes
 -------
 
+### v4.5.2
+* New feature to create multiple invitations per course.
+
 ### v4.5.1
 * 2024-12-17 - Optimize error output.
 
