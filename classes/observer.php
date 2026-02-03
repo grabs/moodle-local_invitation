@@ -47,13 +47,13 @@ class observer {
      * @param \core\event\user_loggedout $event
      */
     public static function user_loggedout(\core\event\user_loggedout $event) {
-        global $mycfg;
+        $mycfg = get_config('local_invitation');
 
         if (!util::is_active()) {
             return;
         }
 
-        if (!$mycfg->deleteafterlogout) {
+        if (empty($mycfg->deleteafterlogout)) {
             return;
         }
 

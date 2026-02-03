@@ -54,6 +54,14 @@ function local_invitation_extend_navigation(global_navigation $navigation) {
  * @param navigation_node $navigation
  */
 function local_invitation_extend_navigation_course(navigation_node $navigation) {
+    global $COURSE;
+
+    // Check the permission.
+    $context = \context_course::instance($COURSE->id);
+    if (!util::can_use_invitation($context)) {
+        return null;
+    }
+
     if ($newnode = nav::create_navigation_node()) {
         $navigation->add_node($newnode);
     }
