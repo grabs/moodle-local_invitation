@@ -4,6 +4,10 @@ moodle-local_invitation
 Changes
 -------
 
+### v5.1.1
+* Students could see invitation link.
+* Fix error in delete on logout feature.
+
 ### v5.1
 * New feature to create multiple invitations per course.
 
