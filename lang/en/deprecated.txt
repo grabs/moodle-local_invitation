@@ -1,0 +1,1 @@
+current_invitation_note,local_invitation
