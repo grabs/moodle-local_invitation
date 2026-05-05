@@ -4,6 +4,9 @@ moodle-local_invitation
 Changes
 -------
 
+### v4.5.4
+* Remove old info string.
+
 ### v4.5.3
 * Students could see invitation link.
 * Fix error in delete on logout feature.
