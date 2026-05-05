@@ -4,6 +4,10 @@ moodle-local_invitation
 Changes
 -------
 
+### v5.1.2
+* Remove old info string.
+* Fix collapsed qr-code (#5)
+
 ### v5.1.1
 * Students could see invitation link.
 * Fix error in delete on logout feature.
