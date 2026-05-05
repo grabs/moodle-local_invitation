@@ -29,7 +29,6 @@ $string['consent']                                   = 'Consent (optional)';
 $string['consent_help']                              = 'If you define a consent text a checkbox appears to the invited users which must be checked by them.';
 $string['consent_title']                             = 'Confirmation';
 $string['current_invitation']                        = 'Current invitation';
-$string['current_invitation_note']                   = 'If you create a new invitation, the old one will automatically become invalid.';
 $string['delete_after_logout']                       = 'Delete after logout';
 $string['delete_after_logout_help']                  = 'Delete the user immediately after logging out. With this active you cannot see this user in your course logs.';
 $string['delete_confirmation']                       = 'Do you want to delete this invitation? After that, the invitation link can not be used anymore.';

@@ -33,7 +33,6 @@
     * freeslots
     * slots
     * qrcodeimg
-    * note
     * courseurl
 
     Example context (json):
@@ -51,7 +50,6 @@
         "freeslots": 3,
         "slots": 15,
         "qrcodeimg": "https://qrcodeimage.example.com/dummy.png",
-        "note": "created",
         "courseurl": "https://example.com"
     }
 }}
@@ -145,10 +143,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="invitation-note">
-                <span class="fw-bold">{{#str}} note, local_invitation {{/str}}</span>
-                <span>{{note}}</span>
             </div>
             <div class="back-to-course">
                 <a href="{{{courseurl}}}" class="btn btn-primary"><i class="fa fa-arrow-left"></i> {{#str}} back_to_course, local_invitation{{/str}}</a>

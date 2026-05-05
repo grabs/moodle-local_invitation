@@ -107,7 +107,6 @@ class invitation_info extends base {
         $this->data['qrcodeimg']         = 'data:image/png;base64,' . base64_encode((string) $qrcode->getBarcodePngData(5, 5));
 
         // Set additional information.
-        $this->data['note'] = get_string('current_invitation_note', 'local_invitation');
         $this->data['autoopen'] = $infoautoopen;
     }
 
